@@ -120,7 +120,14 @@ export default function Footer() {
           </p>
           <div className="flex flex-col sm:items-end gap-1">
             <p className="text-center sm:text-right font-medium">
-              Built with Next.js, Node.js, cheerio &amp; GitHub Actions
+              {'Built with '}
+              <a href="https://nextjs.org" target="_blank" rel="noreferrer" className="hover:text-blue-500 transition-colors underline underline-offset-2">Next.js</a>
+              {', '}
+              <a href="https://nodejs.org" target="_blank" rel="noreferrer" className="hover:text-blue-500 transition-colors underline underline-offset-2">Node.js</a>
+              {', '}
+              <a href="https://cheerio.js.org" target="_blank" rel="noreferrer" className="hover:text-blue-500 transition-colors underline underline-offset-2">cheerio</a>
+              {' & '}
+              <a href="https://github.com/features/actions" target="_blank" rel="noreferrer" className="hover:text-blue-500 transition-colors underline underline-offset-2">GitHub Actions</a>
             </p>
             <p className="flex items-center justify-center sm:justify-end gap-1.5">
               Powered by <span className="text-red-500 text-xs">♥</span> Open Source © {new Date().getFullYear()}
