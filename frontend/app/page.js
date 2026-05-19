@@ -4,6 +4,11 @@ import NoticeList from '@/components/NoticeList';
 import AnimatedBell from '@/components/AnimatedBell';
 import LiveSubscriberCount from '@/components/LiveSubscriberCount';
 
+// Override the layout title template — home tab shows exactly "PDUAM NOTIFY"
+export const metadata = {
+  title: { absolute: 'PDUAM NOTIFY' },
+};
+
 function getNotices() {
   try {
     const { getAllNotices } = require('@/lib/notices');

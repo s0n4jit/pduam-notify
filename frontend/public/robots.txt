@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Block internal API and verification paths
+Disallow: /api/
+Disallow: /api/subscribe
+Disallow: /api/verify-email
+Disallow: /api/unsubscribe
+Disallow: /api/resend-verification
+
+# Sitemap
+Sitemap: https://notify.pduam.dpdns.org/sitemap.xml

@@ -1,9 +1,25 @@
 import NoticeList from '@/components/NoticeList';
 
+const SITE_URL = 'https://notify.pduam.dpdns.org';
+
 export const metadata = {
-  title: 'Notice History',
-  description: 'Browse all notices from PDUAM Amjonga. Complete history of college announcements.',
+  title:       'Notice History',
+  description: 'Browse all college notices from Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga. Complete history of announcements, exam schedules, and updates.',
+  keywords:    ['PDUAM notices', 'college announcements', 'PDUAM Amjonga notices', 'exam schedule'],
+  alternates:  { canonical: `${SITE_URL}/notices` },
+  openGraph: {
+    title:       'College Notice History — PDUAM NOTIFY',
+    description: 'All notices from PDUAM Amjonga in one place.',
+    url:         `${SITE_URL}/notices`,
+    images:      [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: 'PDUAM NOTIFY' }],
+  },
+  twitter: {
+    card:   'summary_large_image',
+    title:  'College Notice History — PDUAM NOTIFY',
+    images: [`${SITE_URL}/og-image.png`],
+  },
 };
+
 
 function getNotices() {
   try {

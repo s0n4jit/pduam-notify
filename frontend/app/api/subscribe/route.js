@@ -48,9 +48,9 @@ export async function POST(req) {
       return NextResponse.json({ status: 'already_subscribed' });
     }
 
-    // Generate verification token (expires in 24 hours)
+    // Generate verification token (expires in 1 hour)
     const token = generateToken();
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
     // Store subscriber as unverified
     const ua = req.headers.get('user-agent') || '';

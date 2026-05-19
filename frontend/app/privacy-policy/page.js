@@ -1,7 +1,20 @@
+const SITE_URL = 'https://notify.pduam.dpdns.org';
+
 export const metadata = {
-  title: 'Privacy Policy',
+  title:       'Privacy Policy',
   description: 'Privacy policy for PDUAM NOTIFY — how we collect, use, and protect your data.',
+  keywords:    ['PDUAM NOTIFY privacy', 'data policy', 'email privacy'],
+  alternates:  { canonical: `${SITE_URL}/privacy-policy` },
+  robots:      { index: true, follow: true },
+  openGraph: {
+    title:       'Privacy Policy — PDUAM NOTIFY',
+    description: 'How PDUAM NOTIFY handles and protects your personal data.',
+    url:         `${SITE_URL}/privacy-policy`,
+    images:      [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: 'PDUAM NOTIFY' }],
+  },
+  twitter: { card: 'summary', title: 'Privacy Policy — PDUAM NOTIFY' },
 };
+
 
 export default function PrivacyPage() {
   return (
@@ -56,7 +69,7 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-1 text-[14px]" style={{ color: 'var(--text-muted)' }}>
               <li>IP addresses are hashed using SHA-256 with a secure secret salt.</li>
-              <li>Verification tokens expire automatically after 24 hours.</li>
+              <li>Verification tokens expire automatically after 1 hour.</li>
               <li>All API endpoints are strictly rate-limited.</li>
               <li>No plain-text sensitive identifiable data is ever stored.</li>
             </ul>

@@ -40,9 +40,9 @@ function buildVerificationEmail(email, token) {
 <h1 style="margin:0 0 8px;font-size:22px;color:#1e293b;">Verify Your Email</h1>
 <p style="margin:0 0 24px;font-size:14px;color:#64748b;">Click below to start receiving notice alerts.</p>
 <a href="${url}" style="display:inline-block;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;">✓ Verify Email</a>
-<p style="margin:16px 0 0;font-size:12px;color:#94a3b8;">Link expires in 24 hours.</p>
+<p style="margin:16px 0 0;font-size:12px;color:#94a3b8;">Link expires in 1 hour.</p>
 </td></tr>`);
-  const text = `Verify your email for ${COLLEGE_SHORT} Notice Alerts:\n${url}\n\nExpires in 24 hours.`;
+  const text = `Verify your email for ${COLLEGE_SHORT} Notice Alerts:\n${url}\n\nExpires in 1 hour.`;
   return { html, text };
 }
 

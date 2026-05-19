@@ -28,7 +28,7 @@ export async function GET(req) {
 
     if (new Date(record.expires_at) < new Date()) {
       await deleteVerificationToken(token);
-      return new Response(errorHtml('This verification link has expired. Please subscribe again.'), {
+      return new Response(errorHtml('This verification link has expired (links are valid for 1 hour).', { showResend: true }), {
         status: 410, headers: { 'Content-Type': 'text/html' },
       });
     }
@@ -341,8 +341,96 @@ function successHtml(email) {
 
 // ─── Error page ───────────────────────────────────────────────────────────────
 
-function errorHtml(message) {
+function errorHtml(message, { showResend = false } = {}) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+
+  const resendSection = showResend ? `
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:0.75rem;">
+        Enter your email to get a new verification link:
+      </p>
+      <form id="resend-form" style="display:flex;flex-direction:column;gap:10px;">
+        <input
+          id="resend-email"
+          type="email"
+          placeholder="your@email.com"
+          required
+          autocomplete="email"
+          style="
+            background:rgba(255,255,255,0.06);
+            border:1px solid rgba(255,255,255,0.12);
+            border-radius:0.625rem;
+            padding:0.625rem 1rem;
+            font-size:14px;
+            color:#f1f5f9;
+            outline:none;
+            font-family:inherit;
+            width:100%;
+          "
+        />
+        <button
+          type="submit"
+          id="resend-btn"
+          style="
+            background:linear-gradient(135deg,#2563eb,#1d4ed8);
+            color:#fff;
+            border:none;
+            border-radius:0.75rem;
+            padding:0.75rem 1.5rem;
+            font-weight:700;
+            font-size:14px;
+            cursor:pointer;
+            width:100%;
+            font-family:inherit;
+          "
+        >
+          Resend Verification Email
+        </button>
+        <div id="resend-msg" style="font-size:12px;text-align:center;min-height:18px;"></div>
+      </form>
+
+      <script>
+        document.getElementById('resend-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          var btn = document.getElementById('resend-btn');
+          var msg = document.getElementById('resend-msg');
+          var email = document.getElementById('resend-email').value.trim();
+
+          btn.disabled = true;
+          btn.textContent = 'Sending…';
+          msg.style.color = 'rgba(255,255,255,0.4)';
+          msg.textContent = '';
+
+          try {
+            var res = await fetch('/api/resend-verification', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: email }),
+            });
+            var data = await res.json();
+
+            if (res.ok) {
+              msg.style.color = '#10b981';
+              msg.textContent = '✓ Verification email sent! Check your inbox.';
+              btn.textContent = 'Sent!';
+            } else {
+              msg.style.color = '#f87171';
+              msg.textContent = data.error || 'Something went wrong. Please try again.';
+              btn.disabled = false;
+              btn.textContent = 'Resend Verification Email';
+            }
+          } catch {
+            msg.style.color = '#f87171';
+            msg.textContent = 'Network error. Please try again.';
+            btn.disabled = false;
+            btn.textContent = 'Resend Verification Email';
+          }
+        });
+      </script>
+    </div>
+  ` : `
+    <a href="${siteUrl}" class="btn-ghost" style="margin-top:1rem;">← Back to PDUAM NOTIFY</a>
+  `;
 
   const body = `
   <div class="card">
@@ -355,8 +443,11 @@ function errorHtml(message) {
     <h1 class="title-error">Verification Failed</h1>
     <p class="text">${message}</p>
 
-    <a href="${siteUrl}" class="btn-ghost">← Back to PDUAM NOTIFY</a>
+    ${resendSection}
+
+    ${showResend ? `<a href="${siteUrl}" class="btn-ghost" style="margin-top:0.75rem;display:block;text-align:center;font-size:13px;color:rgba(255,255,255,0.3);text-decoration:none;">← Back to home</a>` : ''}
   </div>`;
 
   return pageShell({ title: 'Verification Failed — PDUAM NOTIFY', bodyContent: body, siteUrl });
 }
+

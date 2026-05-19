@@ -1,6 +1,21 @@
+const SITE_URL = 'https://notify.pduam.dpdns.org';
+
 export const metadata = {
-  title: 'About',
-  description: 'Learn about PDUAM NOTIFY and how the automated notification system works.',
+  title:       'About',
+  description: 'Learn how PDUAM NOTIFY automatically monitors and delivers college notices from Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga straight to your inbox.',
+  keywords:    ['PDUAM NOTIFY', 'about', 'college notice automation', 'PDUAM Amjonga'],
+  alternates:  { canonical: `${SITE_URL}/about` },
+  openGraph: {
+    title:       'About PDUAM NOTIFY',
+    description: 'How the automated notice monitoring system works for PDUAM Amjonga students.',
+    url:         `${SITE_URL}/about`,
+    images:      [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: 'PDUAM NOTIFY' }],
+  },
+  twitter: {
+    card:   'summary_large_image',
+    title:  'About PDUAM NOTIFY',
+    images: [`${SITE_URL}/og-image.png`],
+  },
 };
 
 export default function AboutPage() {
