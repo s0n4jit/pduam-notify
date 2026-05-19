@@ -4,8 +4,14 @@
   "private": true,
   "description": "PDUAM NOTIFY — automated college notice monitoring with email notifications, Google Sheets storage, and Next.js frontend",
   "scripts": {
-    "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
-    "scrape": "cd scraper && npm run scrape"
+    "dev":     "cd frontend && npm run dev",
+    "build":   "cd frontend && npm run build",
+    "start":   "cd frontend && npm run start",
+    "lint":    "cd frontend && npm run lint",
+    "scrape":  "cd scraper  && npm run scrape",
+    "install:all": "cd frontend && npm install && cd ../scraper && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

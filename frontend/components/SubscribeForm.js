@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function SubscribeForm() {
   const [email, setEmail] = useState('');
@@ -76,6 +77,7 @@ export default function SubscribeForm() {
   };
 
   return (
+    <>
     <div className="glass p-5 sm:p-8 rounded-[1.75rem] shadow-xl" id="subscribe-form">
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-5 text-center sm:text-left">
         <div
@@ -244,58 +246,115 @@ export default function SubscribeForm() {
         )}
       </form>
 
-      {/* Success Modal */}
-      {showModal && (
-        <div
-          className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
-          style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Subscription confirmation"
-          onClick={(e) => { if (e.target === e.currentTarget) { setShowModal(false); setStatus('idle'); } }}
-        >
-          <div
-            className="rounded-2xl shadow-2xl max-w-sm w-full text-center p-6 sm:p-8"
-            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', animation: 'fadeUp 0.25s ease-out' }}
-          >
-            <div
-              className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"
-              style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)' }}
-            >
-              📬
-            </div>
-            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text)' }}>Verify Your Email</h3>
-            <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--text-secondary)' }}>
-              Almost done! We sent a verification link to confirm your email. Please check your inbox and verify using the link.
-            </p>
-            <div
-              className="rounded-lg p-3 mb-5 text-left flex items-start gap-2"
-              style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}
-            >
-              <span className="text-amber-500 text-base leading-none flex-shrink-0 mt-0.5">⚠️</span>
-              <p className="text-[11px] font-medium" style={{ color: 'var(--text-secondary)' }}>
-                Can&apos;t find it? Check your <strong className="text-amber-500">Spam or Junk</strong> folder!
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => { setShowModal(false); setStatus('idle'); }}
-              className="btn-primary w-full"
-              autoFocus
-            >
-              Got it, thanks!
-            </button>
-          </div>
-        </div>
-      )}
-
       <p className="text-[11px] mt-3" style={{ color: 'var(--text-muted)' }}>
         We&apos;ll send a verification email first. Unsubscribe anytime.{' '}
         <a href="/privacy-policy" className="underline hover:opacity-80">Privacy Policy</a>
       </p>
 
-      {/* Spinner keyframe — scoped here to avoid global injection */}
+      {/* Spinner keyframe */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
+
+    {/* ── Verify-email modal ── rendered via portal to escape the glass
+        container's backdrop-filter stacking context, which breaks
+        position:fixed for children on all browsers. */}
+    {showModal && typeof document !== 'undefined' && createPortal(
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          padding: '0 1rem 1.5rem',
+          background: 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(5px)',
+          WebkitBackdropFilter: 'blur(5px)',
+        }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Subscription confirmation"
+        onClick={(e) => { if (e.target === e.currentTarget) { setShowModal(false); setStatus('idle'); } }}
+      >
+        {/* Center on tablet+ */}
+        <style>{`
+          @media (min-width: 640px) {
+            #verify-modal-card-wrap { align-items: center !important; padding-bottom: 0 !important; }
+          }
+          @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+        <div
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: '1.25rem',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.25)',
+            maxWidth: '360px',
+            width: '100%',
+            padding: '2rem 1.5rem',
+            textAlign: 'center',
+            animation: 'fadeUp 0.28s cubic-bezier(0,0,0.21,1) both',
+          }}
+        >
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.75rem',
+              margin: '0 auto 1rem',
+              background: 'rgba(16,185,129,0.1)',
+              border: '1px solid rgba(16,185,129,0.25)',
+            }}
+          >📬</div>
+
+          <h3 style={{ color: 'var(--text)', fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.5rem' }}>
+            Verify Your Email
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+            Almost done! We sent a verification link to confirm your email.
+            Please check your inbox and verify using the link.
+          </p>
+
+          <div
+            style={{
+              background: 'rgba(245,158,11,0.08)',
+              border: '1px solid rgba(245,158,11,0.2)',
+              borderRadius: '0.625rem',
+              padding: '0.625rem 0.875rem',
+              marginBottom: '1.25rem',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px',
+              textAlign: 'left',
+            }}
+          >
+            <span style={{ flexShrink: 0, marginTop: '1px' }}>⚠️</span>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '11px', fontWeight: 500, margin: 0 }}>
+              Can&apos;t find it? Check your{' '}
+              <strong style={{ color: '#f59e0b' }}>Spam or Junk</strong> folder!
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => { setShowModal(false); setStatus('idle'); }}
+            className="btn-primary w-full"
+            autoFocus
+          >
+            Got it, thanks!
+          </button>
+        </div>
+      </div>,
+      document.body
+    )}
+  </>
   );
 }

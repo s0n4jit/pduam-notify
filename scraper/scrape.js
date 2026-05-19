@@ -12,7 +12,7 @@
  * - Retry logic and structured logging
  */
 
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 
 const axios = require('axios');
 const cheerio = require('cheerio');

@@ -19,7 +19,6 @@ export async function GET(req) {
       });
     }
 
-    // Look up the token
     const record = await findVerificationToken(token);
     if (!record) {
       return new Response(errorHtml('Invalid or expired verification link.'), {
@@ -27,7 +26,6 @@ export async function GET(req) {
       });
     }
 
-    // Check expiry
     if (new Date(record.expires_at) < new Date()) {
       await deleteVerificationToken(token);
       return new Response(errorHtml('This verification link has expired. Please subscribe again.'), {
@@ -35,7 +33,6 @@ export async function GET(req) {
       });
     }
 
-    // Mark subscriber as verified
     const verified = await verifySubscriber(record.email);
     if (!verified) {
       return new Response(errorHtml('Could not verify email. Subscriber not found.'), {
@@ -43,10 +40,8 @@ export async function GET(req) {
       });
     }
 
-    // Clean up token
     await deleteVerificationToken(token);
 
-    // Return success HTML page
     return new Response(successHtml(record.email), {
       status: 200, headers: { 'Content-Type': 'text/html' },
     });
@@ -58,32 +53,310 @@ export async function GET(req) {
   }
 }
 
+// ─── Shared page shell ────────────────────────────────────────────────────────
+
+function pageShell({ title, bodyContent, siteUrl }) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${title}</title>
+  <link rel="icon" href="${siteUrl}/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      /* Dark gradient background */
+      background: #070b14;
+      background-image:
+        radial-gradient(ellipse at 20% 20%, rgba(37,99,235,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 70%, rgba(16,185,129,0.12) 0%, transparent 50%);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      padding: 2.5rem 2rem;
+      border-radius: 1.5rem;
+      /* Glassmorphism */
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+      animation: rise 0.45s cubic-bezier(0,0,0.21,1) both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Brand pill at top */
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 5px 14px 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
+      text-decoration: none;
+    }
+    .brand span { font-size: 15px; }
+
+    /* Icon ring */
+    .icon-ring {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 2rem;
+    }
+    .icon-ring.success {
+      background: rgba(16,185,129,0.12);
+      border: 1.5px solid rgba(16,185,129,0.3);
+      box-shadow: 0 0 32px rgba(16,185,129,0.15);
+    }
+    .icon-ring.error {
+      background: rgba(239,68,68,0.12);
+      border: 1.5px solid rgba(239,68,68,0.3);
+      box-shadow: 0 0 32px rgba(239,68,68,0.15);
+    }
+
+    .title-success { font-size: 1.5rem; font-weight: 800; color: #10b981; margin-bottom: 0.6rem; }
+    .title-error   { font-size: 1.5rem; font-weight: 800; color: #f87171; margin-bottom: 0.6rem; }
+
+    .email-badge {
+      display: inline-block;
+      background: rgba(37,99,235,0.12);
+      border: 1px solid rgba(37,99,235,0.25);
+      border-radius: 8px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #93c5fd;
+      margin: 0.25rem 0 0.75rem;
+    }
+
+    .text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Countdown ring */
+    .countdown-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .countdown-ring {
+      position: relative;
+      width: 56px;
+      height: 56px;
+    }
+    .countdown-ring svg {
+      transform: rotate(-90deg);
+    }
+    .countdown-ring .track {
+      fill: none;
+      stroke: rgba(255,255,255,0.06);
+      stroke-width: 4;
+    }
+    .countdown-ring .fill {
+      fill: none;
+      stroke: #10b981;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 138.2; /* 2π × 22 */
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .countdown-ring .num {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #10b981;
+    }
+    .countdown-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.05em;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.75rem 1.75rem;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      font-size: 14px;
+      width: 100%;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      padding: 0.75rem 1.75rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 14px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: opacity 0.15s;
+    }
+    .btn-ghost:hover { opacity: 0.8; }
+
+    /* Amber tip box */
+    .tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      text-align: left;
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 0.625rem;
+      padding: 0.625rem 0.875rem;
+      margin-bottom: 1.5rem;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.5;
+    }
+    .tip strong { color: #f59e0b; }
+  </style>
+</head>
+<body>
+  ${bodyContent}
+</body>
+</html>`;
+}
+
+// ─── Success page ──────────────────────────────────────────────────────────────
+
 function successHtml(email) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Email Verified — PDUAM NOTIFY</title>
-<style>*{margin:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f1f5f9;padding:1rem}
-.card{background:#fff;border-radius:1rem;padding:2.5rem;max-width:400px;width:100%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
-.icon{font-size:3rem;margin-bottom:1rem}.title{font-size:1.5rem;font-weight:700;color:#059669;margin-bottom:0.5rem}
-.text{font-size:0.875rem;color:#64748b;margin-bottom:1.5rem;line-height:1.6}
-.btn{display:inline-block;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;text-decoration:none;padding:0.75rem 1.5rem;border-radius:0.5rem;font-weight:600;font-size:0.875rem}
-</style></head><body><div class="card"><div class="icon">✅</div>
-<h1 class="title">Email Verified!</h1>
-<p class="text">Your email <strong>${email}</strong> has been verified. You'll now receive alerts when new notices are posted.</p>
-<a href="${siteUrl}" class="btn">← Back to PDUAM NOTIFY</a></div></body></html>`;
+  const REDIRECT_SEC = 10;
+
+  const body = `
+  <div class="card">
+    <a href="${siteUrl}" class="brand">
+      <span>🔔</span> PDUAM NOTIFY
+    </a>
+
+    <div class="icon-ring success">✅</div>
+
+    <h1 class="title-success">Email Verified!</h1>
+    <div class="email-badge">${email}</div>
+    <p class="text">
+      Your email has been confirmed. You'll now receive instant alerts
+      whenever a new notice is posted on the college notice board.
+    </p>
+
+    <!-- Countdown ring -->
+    <div class="countdown-wrap">
+      <div class="countdown-ring">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle class="track" cx="28" cy="28" r="22"/>
+          <circle class="fill" id="ring-fill" cx="28" cy="28" r="22"/>
+        </svg>
+        <div class="num" id="countdown-num">${REDIRECT_SEC}</div>
+      </div>
+      <span class="countdown-label">Redirecting to home…</span>
+    </div>
+
+    <a href="${siteUrl}" class="btn-primary" id="home-btn">
+      ← Back to PDUAM NOTIFY
+    </a>
+  </div>
+
+  <script>
+    (function() {
+      var total   = ${REDIRECT_SEC};
+      var left    = total;
+      var circumference = 2 * Math.PI * 22; // ≈ 138.2
+      var fill    = document.getElementById('ring-fill');
+      var numEl   = document.getElementById('countdown-num');
+
+      fill.style.strokeDashoffset = '0';
+
+      var timer = setInterval(function() {
+        left--;
+        if (left <= 0) {
+          clearInterval(timer);
+          window.location.href = '${siteUrl}';
+          return;
+        }
+        numEl.textContent = left;
+        var offset = circumference * (1 - left / total);
+        fill.style.strokeDashoffset = offset;
+      }, 1000);
+    })();
+  </script>`;
+
+  return pageShell({ title: 'Email Verified — PDUAM NOTIFY', bodyContent: body, siteUrl });
 }
+
+// ─── Error page ───────────────────────────────────────────────────────────────
 
 function errorHtml(message) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Verification Failed — PDUAM NOTIFY</title>
-<style>*{margin:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f1f5f9;padding:1rem}
-.card{background:#fff;border-radius:1rem;padding:2.5rem;max-width:400px;width:100%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
-.icon{font-size:3rem;margin-bottom:1rem}.title{font-size:1.5rem;font-weight:700;color:#dc2626;margin-bottom:0.5rem}
-.text{font-size:0.875rem;color:#64748b;margin-bottom:1.5rem;line-height:1.6}
-.btn{display:inline-block;background:#f1f5f9;color:#475569;text-decoration:none;padding:0.75rem 1.5rem;border-radius:0.5rem;font-weight:600;font-size:0.875rem;border:1px solid #e2e8f0}
-</style></head><body><div class="card"><div class="icon">❌</div>
-<h1 class="title">Verification Failed</h1>
-<p class="text">${message}</p>
-<a href="${siteUrl}" class="btn">← Back to PDUAM NOTIFY</a></div></body></html>`;
+
+  const body = `
+  <div class="card">
+    <a href="${siteUrl}" class="brand">
+      <span>🔔</span> PDUAM NOTIFY
+    </a>
+
+    <div class="icon-ring error">❌</div>
+
+    <h1 class="title-error">Verification Failed</h1>
+    <p class="text">${message}</p>
+
+    <a href="${siteUrl}" class="btn-ghost">← Back to PDUAM NOTIFY</a>
+  </div>`;
+
+  return pageShell({ title: 'Verification Failed — PDUAM NOTIFY', bodyContent: body, siteUrl });
 }

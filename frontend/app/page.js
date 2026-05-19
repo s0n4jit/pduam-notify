@@ -21,25 +21,33 @@ export default function HomePage() {
   const noticesWithFlag = notices.map((n, i) => ({ ...n, isNew: i < 4 }));
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8 relative">
-      {/* Decorative blobs — pointer-events-none, aria-hidden, use radial-gradient
-          instead of a div + blur filter to reduce paint cost */}
+    <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8">
+      {/* Decorative blobs — fixed to viewport so they fill the full screen
+          and don't create a "card" boundary at the max-w-2xl content edge */}
       <div
         aria-hidden="true"
-        className="absolute top-0 left-0 pointer-events-none -z-10"
         style={{
-          width: '500px',
-          height: '500px',
-          background: 'radial-gradient(circle at 30% 30%, rgba(37,99,235,0.07) 0%, transparent 65%)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '60vw',
+          height: '60vh',
+          background: 'radial-gradient(circle at 20% 20%, rgba(37,99,235,0.06) 0%, transparent 60%)',
+          pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
       <div
         aria-hidden="true"
-        className="absolute top-1/4 right-0 pointer-events-none -z-10"
         style={{
-          width: '400px',
-          height: '400px',
-          background: 'radial-gradient(circle at 70% 30%, rgba(245,158,11,0.07) 0%, transparent 65%)',
+          position: 'fixed',
+          top: '20vh',
+          right: 0,
+          width: '50vw',
+          height: '50vh',
+          background: 'radial-gradient(circle at 80% 20%, rgba(245,158,11,0.05) 0%, transparent 60%)',
+          pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
 

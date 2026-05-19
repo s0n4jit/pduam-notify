@@ -1,4 +1,13 @@
 /** @type {import('next').NextConfig} */
+
+// Load the single root .env file for local development.
+// On Vercel, env vars come from the dashboard — dotenv is a no-op there
+// (it never overrides already-set process.env values).
+require('dotenv').config({
+  path: require('path').join(__dirname, '../.env'),
+  override: false,
+});
+
 const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig = {
