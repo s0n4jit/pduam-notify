@@ -1,26 +1,46 @@
 # 🔔 PDUAM NOTIFY
 
-Automated email notification platform for new notices from [PDUAM Amjonga](https://pduamamjonga.ac.in/notice).
+> Automated email & Telegram notification platform for college notices from [Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga](https://pduamamjonga.ac.in/notice).
 
-**Stack:** Next.js (App Router) · Tailwind CSS · GitHub Actions · Axios + Cheerio · Nodemailer · Google Sheets · Vercel
+**Live:** [notify.pduam.dpdns.org](https://notify.pduam.dpdns.org)
+
+---
+
+## What It Does
+
+Students subscribe with their email → when a new notice is posted on the college website, they receive an instant email alert. New notices are also broadcast to a Telegram channel. No login required, always free.
+
+---
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | [Next.js](https://nextjs.org) 16 (App Router) · Tailwind CSS |
+| Scraper | [Node.js](https://nodejs.org) · [Cheerio](https://cheerio.js.org) |
+| Email | Nodemailer · Gmail SMTP |
+| Database | Google Sheets API |
+| Automation | [GitHub Actions](https://github.com/features/actions) (cron every 30 min) |
+| Hosting | [Vercel](https://vercel.com) |
+| Notifications | Telegram Bot API |
 
 ---
 
 ## Features
 
-- ✅ **Email Subscription** with verification flow
-- ✅ **SHA256 Duplicate Detection** — never sends duplicate alerts
-- ✅ **Automated Monitoring** — checks every 30 minutes via GitHub Actions
-- ✅ **Email Verification** — double opt-in to prevent spam
-- ✅ **One-Click Unsubscribe** — via email link or web form
-- ✅ **Google Sheets Database** — lightweight, free, zero-maintenance storage
-- ✅ **Dark/Light Theme** — with system preference detection
-- ✅ **Notice History** — browse full archive of detected notices
-- ✅ **Rate Limiting** — prevents API abuse
-- ✅ **Anti-Bot Protection** — honeypot field blocks spam subscriptions
-- ✅ **Security First** — hashed IPs, CSRF protection, input sanitization
-- ✅ **Mobile Responsive** — works on all screen sizes
-- ✅ **Privacy & Terms** pages included
+- ✅ **Email subscription** with double opt-in verification
+- ✅ **1-hour token expiry** with resend verification link
+- ✅ **Telegram channel** broadcast for instant updates
+- ✅ **SHA-256 dedup** — never sends duplicate alerts
+- ✅ **One-click unsubscribe** via email link or web form
+- ✅ **Live subscriber count** on homepage
+- ✅ **Notice history** — full archive with search
+- ✅ **Dark / Light theme** — auto-detects system preference
+- ✅ **Rate limiting** — sliding window per IP
+- ✅ **Anti-bot honeypot** — blocks spam subscriptions
+- ✅ **Hashed IPs** — never stores plain IP addresses
+- ✅ **Custom 404 page** + sitemap + robots.txt
+- ✅ **Full SEO** — Open Graph, Twitter cards, canonical URLs
 
 ---
 
@@ -33,16 +53,16 @@ Fetch pduamamjonga.ac.in/notice HTML
         ↓
 Parse notices with Cheerio
         ↓
-Generate SHA256 hash for each notice
+SHA-256 hash each notice title+URL
         ↓
-Compare with hashes in Google Sheets
+Compare hashes with Google Sheets history
         ↓
 If new notices found:
   → Store in Google Sheets
-  → Generate per-subscriber unsubscribe tokens
-  → Send branded HTML emails via Gmail SMTP
+  → Send branded HTML emails to verified subscribers
+  → Post to Telegram channel
         ↓
-Next.js frontend reads from Google Sheets API
+Next.js frontend reads notices from Google Sheets
 ```
 
 ---
@@ -54,165 +74,108 @@ pduam-notify/
 ├── .github/
 │   └── workflows/
 │       └── scrape.yml              ← GitHub Actions cron job
-├── frontend/
+├── frontend/                       ← Next.js app (deployed to Vercel)
 │   ├── app/
-│   │   ├── layout.js               ← Root layout (theme, navbar, footer)
-│   │   ├── page.js                 ← Home page (hero, subscribe, notices)
-│   │   ├── globals.css             ← Design system (dark/light themes)
+│   │   ├── layout.js               ← Root layout + full SEO metadata
+│   │   ├── page.js                 ← Home (hero, subscribe, notices)
+│   │   ├── not-found.js            ← Custom 404 page
+│   │   ├── sitemap.js              ← Dynamic sitemap.xml
+│   │   ├── globals.css             ← Design system (dark/light)
 │   │   ├── api/
-│   │   │   ├── subscribe/route.js  ← POST: subscribe with verification
-│   │   │   ├── verify-email/route.js ← GET: verify email token
-│   │   │   ├── unsubscribe/route.js ← POST/GET: unsubscribe
-│   │   │   └── latest-notices/route.js ← GET: fetch notices
-│   │   ├── notices/page.js         ← Notice history page
-│   │   ├── unsubscribe/page.js     ← Unsubscribe form page
-│   │   ├── privacy/page.js         ← Privacy policy
-│   │   └── terms/page.js           ← Terms of service
+│   │   │   ├── subscribe/          ← POST: subscribe + send verification
+│   │   │   ├── verify-email/       ← GET: verify email token
+│   │   │   ├── resend-verification/← POST: resend 1-hour link
+│   │   │   ├── unsubscribe/        ← POST/GET: unsubscribe
+│   │   │   └── subscriber-count/   ← GET: live subscriber count
+│   │   ├── notices/                ← Notice history page
+│   │   ├── about/                  ← About page
+│   │   ├── privacy-policy/         ← Privacy policy
+│   │   ├── terms-of-service/       ← Terms of service
+│   │   └── unsubscribe/            ← Unsubscribe form
 │   ├── components/
-│   │   ├── ThemeProvider.js        ← Dark/light theme context
-│   │   ├── Navbar.js               ← Navigation bar
-│   │   ├── Footer.js               ← Footer with links
-│   │   ├── SubscribeForm.js        ← Email subscription form
+│   │   ├── ThemeProvider.js        ← System theme detection + manual toggle
+│   │   ├── Navbar.js               ← Sticky pill navbar
+│   │   ├── Footer.js               ← Footer with tech links
+│   │   ├── SubscribeForm.js        ← Email subscription form + modal
 │   │   ├── NoticeList.js           ← Notice list with search
-│   │   └── Toast.js                ← Toast notification system
+│   │   ├── LiveSubscriberCount.js  ← Animated live count
+│   │   ├── AnimatedBell.js         ← Bell animation
+│   │   └── PageTransition.js       ← Page enter animation
 │   ├── lib/
-│   │   ├── sheets.js               ← Google Sheets CRUD operations
+│   │   ├── sheets.js               ← Google Sheets CRUD
 │   │   ├── email.js                ← Email templates + Nodemailer
-│   │   ├── crypto.js               ← SHA256, tokens, sanitization
+│   │   ├── crypto.js               ← SHA-256, tokens, hashing
+│   │   ├── notices.js              ← Notice data reader
 │   │   └── rate-limit.js           ← In-memory rate limiter
-│   ├── next.config.js              ← Security headers, CORS
-│   ├── tailwind.config.js          ← Theme config
-│   ├── postcss.config.js
-│   ├── jsconfig.json               ← Path aliases
-│   └── package.json
+│   ├── public/
+│   │   ├── icon.svg                ← Favicon
+│   │   ├── og-image.png            ← Open Graph social preview
+│   │   └── robots.txt              ← Search crawler config
+│   └── next.config.js              ← Security headers, env loading
 ├── scraper/
-│   ├── scrape.js                   ← Main scraper + notifier
+│   ├── scrape.js                   ← Main scraper + email + Telegram
 │   └── package.json
-├── vercel.json                     ← Vercel deployment config
+├── setup-guides/                   ← 📚 Step-by-step setup docs
+│   ├── 01-google-sheets-setup.md
+│   ├── 02-gmail-smtp-setup.md
+│   ├── 03-environment-variables.md
+│   ├── 04-telegram-setup.md
+│   ├── 05-vercel-deployment.md
+│   ├── 06-github-actions-setup.md
+│   └── 07-local-development.md
 ├── .env.example                    ← Environment variable template
 ├── .gitignore
-├── package.json                    ← Workspace root
+├── .gitattributes                  ← LF line endings (fixes Windows CRLF)
+├── package.json                    ← Workspace root scripts
 └── README.md
 ```
 
 ---
 
-## Setup Guide
+## Quick Start
 
-### 1. Clone and Install
+### 1. Clone
 
 ```bash
 git clone https://github.com/your-username/pduam-notify.git
 cd pduam-notify
-cd frontend && npm install
-cd ../scraper && npm install
 ```
 
-### 2. Set Up Google Sheets
-
-#### Create a Google Cloud Service Account:
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project (or use existing)
-3. Enable the **Google Sheets API**:
-   - Navigate to **APIs & Services → Library**
-   - Search for "Google Sheets API" → Enable it
-4. Create a **Service Account**:
-   - Go to **IAM & Admin → Service Accounts**
-   - Click **Create Service Account**
-   - Name it `pduam-notify`
-   - Skip optional permissions
-   - Click **Done**
-5. Create a **JSON Key**:
-   - Click on the service account → **Keys** tab
-   - **Add Key → Create new key → JSON**
-   - Download the JSON file
-
-#### Create the Google Spreadsheet:
-
-1. Go to [Google Sheets](https://sheets.google.com) → Create new spreadsheet
-2. Name it `PDUAM Notify Database`
-3. Create **4 sheet tabs** (at the bottom):
-
-| Sheet Name | Column Headers (Row 1) |
-|---|---|
-| `subscribers` | `email`, `verified`, `subscribed_at`, `ip_hash`, `user_agent_hash` |
-| `notices` | `title`, `url`, `hash`, `date`, `detected_at` |
-| `verification_tokens` | `email`, `token`, `created_at`, `expires_at` |
-| `unsubscribe_tokens` | `email`, `token`, `created_at`, `expires_at` |
-
-4. **Share the spreadsheet** with the service account email (found in the JSON key file, e.g., `pduam-notify@project-id.iam.gserviceaccount.com`) → Give **Editor** access.
-
-5. Copy the **Spreadsheet ID** from the URL:
-   ```
-   https://docs.google.com/spreadsheets/d/[THIS_IS_THE_SHEET_ID]/edit
-   ```
-
-### 3. Set Up Gmail App Password
-
-1. Go to [Google Account Security](https://myaccount.google.com/security)
-2. Enable **2-Step Verification** (required)
-3. Search for **"App passwords"** in account settings
-4. Create one → Name it `pduam-notify`
-5. Copy the 16-character password
-
-### 4. Configure Environment Variables
-
-Copy `.env.example` and fill in your values:
+### 2. Configure Environment
 
 ```bash
 cp .env.example .env
+# Fill in all values in .env
 ```
 
-**For Vercel** (frontend):
+### 3. Install & Run
 
-| Variable | Description |
-|---|---|
-| `GMAIL_USER` | Your Gmail address |
-| `GMAIL_APP_PASSWORD` | 16-char App Password |
-| `GOOGLE_SHEET_ID` | Spreadsheet ID from step 2.5 |
-| `GOOGLE_SERVICE_JSON` | Stringified JSON of service account key |
-| `NEXT_PUBLIC_SITE_URL` | Your Vercel deployment URL |
-| `HASH_SALT` | Random string for IP hashing |
+```bash
+cd frontend && npm install && npm run dev
+# → http://localhost:3000
+```
 
-**For GitHub Secrets** (scraper):
+### 4. Run Scraper Once
 
-Same variables as above. Add them in:
-- Repository → **Settings → Secrets and variables → Actions → New repository secret**
-
-### 5. Deploy to Vercel
-
-1. Push code to GitHub
-2. Go to [vercel.com](https://vercel.com) → **New Project**
-3. Import your GitHub repository
-4. Set **Root Directory** to `frontend`
-5. Add all environment variables from step 4
-6. Deploy
-
-### 6. Enable GitHub Actions
-
-The workflow runs automatically every 30 minutes after being pushed to the `main` branch.
-
-**Manual test:** Repository → **Actions** → **PDUAM Notice Scraper** → **Run workflow**
+```bash
+cd scraper && npm install && node scrape.js
+```
 
 ---
 
-## Local Development
+## Setup Guides
 
-```bash
-# Create .env file in frontend directory
-cp .env.example frontend/.env
+Full step-by-step instructions for each component:
 
-# Also create .env in scraper directory
-cp .env.example scraper/.env
-
-# Run frontend
-cd frontend && npm run dev
-# → http://localhost:3000
-
-# Run scraper manually
-cd scraper && node scrape.js
-```
+| Guide | Description |
+|---|---|
+| [01 — Google Sheets Setup](./setup-guides/01-google-sheets-setup.md) | Create Service Account, Spreadsheet, share access |
+| [02 — Gmail SMTP Setup](./setup-guides/02-gmail-smtp-setup.md) | Enable App Password for email sending |
+| [03 — Environment Variables](./setup-guides/03-environment-variables.md) | Full reference for every variable |
+| [04 — Telegram Setup](./setup-guides/04-telegram-setup.md) | Create bot, channel, get IDs |
+| [05 — Vercel Deployment](./setup-guides/05-vercel-deployment.md) | Deploy frontend to Vercel |
+| [06 — GitHub Actions](./setup-guides/06-github-actions-setup.md) | Configure secrets, cron, manual runs |
+| [07 — Local Development](./setup-guides/07-local-development.md) | Run the full stack locally |
 
 ---
 
@@ -221,94 +184,66 @@ cd scraper && node scrape.js
 ### `subscribers`
 | Column | Type | Description |
 |---|---|---|
-| `email` | string | Subscriber's email address |
-| `verified` | string | `"true"` or `"false"` |
-| `subscribed_at` | ISO timestamp | When they subscribed |
-| `ip_hash` | string | SHA256 hash of IP (never plain IP) |
-| `user_agent_hash` | string | SHA256 hash of User-Agent |
+| `email` | string | Subscriber's email |
+| `verified` | `"true"` / `"false"` | Email verified status |
+| `subscribed_at` | ISO timestamp | Subscription time |
+| `ip_hash` | string | SHA-256 hash of IP |
+| `user_agent_hash` | string | SHA-256 hash of User-Agent |
 
 ### `notices`
 | Column | Type | Description |
 |---|---|---|
 | `title` | string | Notice title |
-| `url` | string | Direct URL to notice/PDF |
-| `hash` | string | SHA256 hash for dedup |
-| `date` | string | Publish date (YYYY-MM-DD) |
-| `detected_at` | ISO timestamp | When scraper detected it |
+| `url` | string | Direct URL to notice |
+| `hash` | string | SHA-256 for dedup |
+| `date` | string | Publish date |
+| `detected_at` | ISO timestamp | When scraper found it |
 
 ### `verification_tokens`
 | Column | Type | Description |
 |---|---|---|
 | `email` | string | Email to verify |
 | `token` | string | 64-char hex token |
-| `created_at` | ISO timestamp | Token creation time |
-| `expires_at` | ISO timestamp | Expires after 24 hours |
+| `created_at` | ISO timestamp | Creation time |
+| `expires_at` | ISO timestamp | Expires after **1 hour** |
 
 ### `unsubscribe_tokens`
 | Column | Type | Description |
 |---|---|---|
 | `email` | string | Subscriber email |
 | `token` | string | 64-char hex token |
-| `created_at` | ISO timestamp | Token creation time |
+| `created_at` | ISO timestamp | Creation time |
 | `expires_at` | ISO timestamp | Expires after 7 days |
 
 ---
 
-## Security Features
+## Security
 
 | Feature | Implementation |
 |---|---|
-| **IP Hashing** | SHA-256 with secret salt — never stores plain IPs |
-| **Rate Limiting** | Sliding window per IP (5 requests / 15 min) |
-| **Subscription Cooldown** | 60-second cooldown between attempts |
-| **Honeypot Anti-Bot** | Hidden form field catches automated submissions |
-| **Email Verification** | Double opt-in — must click verification link |
-| **Input Sanitization** | HTML stripping, email validation, length limits |
-| **Security Headers** | X-Frame-Options, CSP, X-Content-Type-Options |
-| **CORS Policy** | Restricted to site URL |
-| **Token Expiry** | Verification: 24h, Unsubscribe: 7d |
-| **Secret Management** | All secrets in env vars, never in code |
+| IP Hashing | SHA-256 with secret salt — no plain IPs stored |
+| Rate Limiting | Sliding window: 5 req / 15 min per IP |
+| Subscription Cooldown | 60-second cooldown between attempts |
+| Honeypot | Hidden form field blocks bots |
+| Double Opt-in | Email verification required before alerts |
+| Token Expiry | Verification: 1h · Unsubscribe: 7d |
+| Input Sanitization | HTML stripping, regex validation, length limits |
+| Security Headers | X-Frame-Options, X-Content-Type-Options, Referrer-Policy |
+| Secrets | All credentials in env vars, never in code |
 
 ---
 
-## Customization
+## Scalability
 
-### Change scrape frequency
-Edit `.github/workflows/scrape.yml`:
-```yaml
-- cron: "*/30 * * * *"   # every 30 min (default)
-- cron: "*/15 * * * *"   # every 15 min
-- cron: "0 * * * *"      # every hour
-```
-
-> **Note:** GitHub free tier minimum is 5 minutes. Actual execution may be delayed.
-
----
-
-## Troubleshooting
-
-| Problem | Fix |
+| Subscriber Count | Recommended Setup |
 |---|---|
-| Emails not sending | Check `GMAIL_USER` and `GMAIL_APP_PASSWORD` in secrets |
-| Google Sheets 403 | Ensure spreadsheet is shared with service account email |
-| "Invalid credentials" | Re-stringify JSON key — must be single-line, no line breaks |
-| Action not running | Check Actions are enabled in repo → Settings → Actions |
-| Frontend shows no notices | Run scraper at least once to populate Google Sheets |
-| Rate limited | Wait 15 minutes, or test from a different IP |
-| Verification email missing | Check spam folder; ensure Gmail App Password is correct |
-
----
-
-## Scalability Recommendations
-
-- **Under 500 subscribers:** Google Sheets works perfectly
-- **500-5000 subscribers:** Consider Supabase or PlanetScale
-- **5000+ subscribers:** Use a dedicated email service (SendGrid, Resend)
-- **High traffic:** Add Redis for rate limiting (Upstash)
-- **Better scraping:** Add Puppeteer for JavaScript-rendered pages
+| < 500 | Google Sheets (current) — works perfectly |
+| 500–5,000 | Migrate to Supabase or PlanetScale |
+| 5,000+ | Dedicated email service (Resend, SendGrid) |
+| High traffic | Add Upstash Redis for distributed rate limiting |
 
 ---
 
 ## License
 
-MIT — feel free to adapt for any college notice board.
+MIT — freely adapt for any institution's notice board.

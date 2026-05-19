@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "googleapis": "^144.0.0",
     "next": "^16.2.6",
     "nodemailer": "^8.0.7",
