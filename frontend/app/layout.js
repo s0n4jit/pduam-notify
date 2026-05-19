@@ -4,7 +4,9 @@ import ThemeProvider from '@/components/ThemeProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from "@vercel/analytics/next"
 
 const SITE_URL  = 'https://notify.pduam.dpdns.org';
 const SITE_NAME = 'PDUAM NOTIFY';
@@ -140,6 +142,7 @@ export default function RootLayout({ children }) {
           </ThemeProvider>
         </div>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

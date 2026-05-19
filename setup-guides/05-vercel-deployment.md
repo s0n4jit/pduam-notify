@@ -82,6 +82,17 @@ First deployment takes ~2 minutes.
 2. Add your domain (e.g., `notify.pduam.dpdns.org`)
 3. Follow the DNS instructions to add a **CNAME** record pointing to `cname.vercel-dns.com`
 
+## Step 7 — Enable Vercel Analytics & Speed Insights (Optional but Recommended)
+
+PDUAM NOTIFY comes pre-configured with Vercel Web Analytics and Speed Insights to track real-time traffic, visitor demographics, and page performance without compromising user privacy.
+
+To enable them:
+1. In your Vercel project dashboard, click on the **Analytics** tab at the top.
+2. Click **Enable** to turn on Web Analytics.
+3. Next, click on the **Speed Insights** tab at the top.
+4. Click **Enable** to turn on real-time Core Web Vitals monitoring.
+5. Once enabled, Vercel will automatically start collecting anonymized data from users visiting your site!
+
 ---
 
 ## Redeployment
@@ -123,3 +134,4 @@ To update variables after initial deployment:
 - [ ] All environment variables added
 - [ ] Deployment successful
 - [ ] Custom domain configured (optional)
+- [ ] Vercel Analytics & Speed Insights enabled in dashboard (optional)

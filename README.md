@@ -21,7 +21,7 @@ Students subscribe with their email → when a new notice is posted on the colle
 | Email | Nodemailer · Gmail SMTP |
 | Database | Google Sheets API |
 | Automation | [GitHub Actions](https://github.com/features/actions) (cron every 30 min) |
-| Hosting | [Vercel](https://vercel.com) |
+| Hosting | [Vercel](https://vercel.com) (Analytics & Speed Insights) |
 | Notifications | Telegram Bot API |
 
 ---
@@ -41,6 +41,7 @@ Students subscribe with their email → when a new notice is posted on the colle
 - ✅ **Hashed IPs** — never stores plain IP addresses
 - ✅ **Custom 404 page** + sitemap + robots.txt
 - ✅ **Full SEO** — Open Graph, Twitter cards, canonical URLs
+- ✅ **Analytics & Performance** — integrated Vercel Web Analytics & Speed Insights
 
 ---
 
