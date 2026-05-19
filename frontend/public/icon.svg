@@ -1,0 +1,36 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="bell-clip">
+      <path d="M 25 85 C 25 80, 35 70, 35 55 C 35 35, 45 25, 60 25 C 75 25, 85 35, 85 55 C 85 70, 95 80, 95 85 C 90 88, 30 88, 25 85 Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Ringing Arcs -->
+  <g fill="none" stroke="#2ab8ef" stroke-width="6" stroke-linecap="round">
+    <path d="M 32 42 A 20 20 0 0 1 48 25" />
+    <path d="M 22 50 A 32 32 0 0 1 45 15" />
+    <path d="M 88 42 A 20 20 0 0 0 72 25" />
+    <path d="M 98 50 A 32 32 0 0 0 75 15" />
+  </g>
+
+  <!-- Animated Bell -->
+  <g>
+    <!-- Top Nub -->
+    <path d="M 48 28 C 48 12, 72 12, 72 28 Z" fill="#6a75f0" stroke="#0a2e79" stroke-width="6" stroke-linejoin="round" />
+    
+    <!-- Clapper -->
+    <path d="M 50 84 C 50 102, 70 102, 70 84 Z" fill="#f99d14" stroke="#0a2e79" stroke-width="6" stroke-linejoin="round" />
+    
+    <!-- Main Body Path for Shadow Clipping -->
+    <g clip-path="url(#bell-clip)">
+      <rect x="0" y="0" width="120" height="120" fill="#ffce3d" />
+      <path d="M 60 25 C 45 45, 45 65, 65 88 L 20 88 L 20 20 Z" fill="#f99d14" />
+    </g>
+    
+    <!-- Main Body Outline -->
+    <path d="M 25 85 C 25 80, 35 70, 35 55 C 35 35, 45 25, 60 25 C 75 25, 85 35, 85 55 C 85 70, 95 80, 95 85 C 90 88, 30 88, 25 85 Z" fill="none" stroke="#0a2e79" stroke-width="6" stroke-linejoin="round" />
+    
+    <!-- Horizontal Line -->
+    <path d="M 29 74 L 72 74" fill="none" stroke="#0a2e79" stroke-width="6" stroke-linecap="round" />
+  </g>
+</svg>

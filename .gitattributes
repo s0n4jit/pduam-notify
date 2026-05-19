@@ -1,0 +1,20 @@
+# ── Line ending normalization ─────────────────────────────────────────────────
+# Normalize all text files to LF in the repo, checkout as-is on Windows.
+# This prevents the "LF will be replaced by CRLF" warnings entirely.
+
+* text=auto eol=lf
+
+# Explicitly binary — never touch line endings
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.svg  binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.zip  binary
+*.tgz  binary
+*.pdf  binary

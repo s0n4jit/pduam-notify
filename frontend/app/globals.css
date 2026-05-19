@@ -1,0 +1,272 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties ─────────────────────────────────────────────── */
+
+:root {
+  --brand: #2563eb;
+  --gold: #f59e0b;
+  --bg: #ffffff;
+  --bg-alt: #f8fafc;
+  --bg-card: #ffffff;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --glass-bg: rgba(241, 245, 249, 0.88);
+  --glass-border: rgba(226, 232, 240, 0.7);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --input-bg: #f1f5f9;
+}
+
+.dark {
+  --bg: #070b14;
+  --bg-alt: #0f1629;
+  --bg-card: #111827;
+  --text: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(17, 24, 39, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --input-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Remove smooth scroll — it causes problems on some iOS devices */
+    scroll-behavior: auto;
+    /* Prevent text size adjustments on mobile orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    transition: background-color 0.25s ease, color 0.25s ease;
+    /* Prevent horizontal scroll — but do NOT use overflow-x: hidden on body
+       because it breaks position: sticky in Safari. Instead we clip on a wrapper. */
+    overscroll-behavior-x: none;
+  }
+
+  /* Remove tap highlight on all interactive elements */
+  a,
+  button,
+  [role='button'] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Ensure buttons are always interactive */
+  button {
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+}
+
+/* ─── Utilities ─────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* Glass: uses CSS vars so it's automatically theme-aware.
+     backdrop-filter can block pointer events on some WebKit builds when
+     applied to a parent of buttons — avoid nesting interactive elements
+     inside heavy blur containers. */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .gold-text {
+    background: linear-gradient(135deg, #fef3c7, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+  }
+
+  .input-field {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 0.75rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    /* Prevent iOS zoom on focus (font-size must be >= 16px visually or set explicitly) */
+    font-size: 16px;
+  }
+
+  .input-field::placeholder {
+    color: var(--text-muted);
+  }
+
+  .input-field:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    /* Use only transform + opacity for GPU-accelerated animations */
+    transition: opacity 0.15s ease, transform 0.1s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    /* Minimum touch target */
+    min-height: 44px;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+    opacity: 0.85;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Clip horizontal overflow without breaking sticky */
+  .clip-x {
+    clip-path: inset(0);
+  }
+}
+
+/* ─── Mobile nav dropdown ────────────────────────────────────────────────
+   display:grid is set here (not inline) so Tailwind's sm:hidden utility
+   (which generates display:none at ≥640px) can override it correctly.
+   Inline styles always win over classes, which is why we moved it here.
+────────────────────────────────────────────────────────────────────────── */
+.nav-dropdown {
+  display: grid;
+}
+
+/* Navbar control buttons (theme toggle, hamburger).
+   display:flex is here — NOT inline — so sm:hidden can override the hamburger. */
+.ctrl-btn {
+  display: flex;
+}
+
+/* ─── Page Transition ────────────────────────────────────────────────────
+   Replicates the translate3d(0, 100%, 0) → translate3d(0, 0, 0) slide-up
+   effect with cubic-bezier(0, 0, 0.21, 1) — the same easing as the
+   reference CSS. Pages feel like they rise into place from below.
+────────────────────────────────────────────────────────────────────────── */
+
+.page-transition-enter {
+  animation: pageSlideUp 0.45s cubic-bezier(0, 0, 0.21, 1) both;
+}
+
+@keyframes pageSlideUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 48px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────
+   Use only transform + opacity — these are GPU-composited and never
+   trigger layout recalculations, making them safe for low-end devices.
+────────────────────────────────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* ─── Toast ─────────────────────────────────────────────────────────────── */
+
+.toast-enter {
+  animation: slideInRight 0.25s ease both;
+}
+
+.toast-exit {
+  animation: slideOutRight 0.25s ease both;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(100%); }
+}
+
+/* ─── Mobile: reduce motion for accessibility ─────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

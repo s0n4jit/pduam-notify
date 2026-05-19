@@ -1,0 +1,63 @@
+export default function AnimatedBell({ className = "w-6 h-6" }) {
+  return (
+    <div className={`relative flex items-center justify-center ${className}`}>
+      <style>
+        {`
+          @keyframes ring {
+            0% { transform: rotate(0); }
+            10% { transform: rotate(15deg); }
+            20% { transform: rotate(-10deg); }
+            30% { transform: rotate(5deg); }
+            40% { transform: rotate(-5deg); }
+            50% { transform: rotate(0); }
+            100% { transform: rotate(0); }
+          }
+          .animate-ring {
+            transform-origin: 60px 30px;
+            animation: ring 2.5s infinite ease-in-out;
+          }
+        `}
+      </style>
+      <svg 
+        viewBox="0 0 120 120" 
+        xmlns="http://www.w3.org/2000/svg" 
+        className="w-full h-full drop-shadow-sm"
+      >
+        <defs>
+          <clipPath id="bell-clip">
+            <path d="M 25 85 C 25 80, 35 70, 35 55 C 35 35, 45 25, 60 25 C 75 25, 85 35, 85 55 C 85 70, 95 80, 95 85 C 90 88, 30 88, 25 85 Z" />
+          </clipPath>
+        </defs>
+
+        {/* Ringing Arcs */}
+        <g fill="none" stroke="#2ab8ef" strokeWidth="6" strokeLinecap="round">
+          <path d="M 32 42 A 20 20 0 0 1 48 25" />
+          <path d="M 22 50 A 32 32 0 0 1 45 15" />
+          <path d="M 88 42 A 20 20 0 0 0 72 25" />
+          <path d="M 98 50 A 32 32 0 0 0 75 15" />
+        </g>
+
+        {/* Animated Bell */}
+        <g className="animate-ring">
+          {/* Top Nub */}
+          <path d="M 48 28 C 48 12, 72 12, 72 28 Z" fill="#6a75f0" stroke="#0a2e79" strokeWidth="6" strokeLinejoin="round" />
+          
+          {/* Clapper */}
+          <path d="M 50 84 C 50 102, 70 102, 70 84 Z" fill="#f99d14" stroke="#0a2e79" strokeWidth="6" strokeLinejoin="round" />
+          
+          {/* Main Body Path for Shadow Clipping */}
+          <g clipPath="url(#bell-clip)">
+            <rect x="0" y="0" width="120" height="120" fill="#ffce3d" />
+            <path d="M 60 25 C 45 45, 45 65, 65 88 L 20 88 L 20 20 Z" fill="#f99d14" />
+          </g>
+          
+          {/* Main Body Outline */}
+          <path d="M 25 85 C 25 80, 35 70, 35 55 C 35 35, 45 25, 60 25 C 75 25, 85 35, 85 55 C 85 70, 95 80, 95 85 C 90 88, 30 88, 25 85 Z" fill="none" stroke="#0a2e79" strokeWidth="6" strokeLinejoin="round" />
+          
+          {/* Horizontal Line */}
+          <path d="M 29 74 L 72 74" fill="none" stroke="#0a2e79" strokeWidth="6" strokeLinecap="round" />
+        </g>
+      </svg>
+    </div>
+  );
+}
