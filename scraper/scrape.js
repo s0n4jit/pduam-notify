@@ -6,7 +6,7 @@
  * - Stores notices in data/notices.json (committed by GitHub Actions)
  * - Broadcasts new notices to Telegram channel
  * - Reads subscribers from Google Sheets
- * - Sends branded HTML emails via Gmail SMTP
+ * - Sends branded HTML emails
  * - Supports CUSTOM_FROM_EMAIL and REPLY_TO_EMAIL
  * - Per-subscriber unsubscribe tokens
  * - Retry logic and structured logging
