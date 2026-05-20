@@ -55,7 +55,7 @@ In the **Configure Project** screen, scroll to **Environment Variables**:
 | `GMAIL_APP_PASSWORD` | `your16charpassword` | Production, Preview, Development |
 | `GOOGLE_SHEET_ID` | `your_sheet_id` | Production, Preview, Development |
 | `GOOGLE_SERVICE_JSON` | `{"type":"service_account",...}` | Production, Preview, Development |
-| `NEXT_PUBLIC_SITE_URL` | `https://notify.pduam.dpdns.org` | Production |
+| `NEXT_PUBLIC_SITE_URL` | `https://notify-pduam.vercel.app` | Production |
 | `HASH_SALT` | `your-random-secret` | Production, Preview, Development |
 | `CUSTOM_FROM_EMAIL` | *(optional)* | Production |
 | `REPLY_TO_EMAIL` | *(optional)* | Production |
@@ -79,7 +79,7 @@ First deployment takes ~2 minutes.
 ## Step 6 — Add Custom Domain (Optional)
 
 1. In your project dashboard → **Settings → Domains**
-2. Add your domain (e.g., `notify.pduam.dpdns.org`)
+2. Add your domain (e.g., `notify-pduam.vercel.app`)
 3. Follow the DNS instructions to add a **CNAME** record pointing to `cname.vercel-dns.com`
 
 ## Step 7 — Enable Vercel Analytics & Speed Insights (Optional but Recommended)

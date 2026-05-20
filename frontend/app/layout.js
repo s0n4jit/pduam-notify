@@ -7,7 +7,7 @@ import PageTransition from '@/components/PageTransition';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
-const SITE_URL  = 'https://notify.pduam.dpdns.org';
+const SITE_URL  = 'https://notify-pduam.vercel.app';
 const SITE_NAME = 'PDUAM NOTIFY';
 const COLLEGE   = 'Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga';
 

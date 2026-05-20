@@ -30,7 +30,7 @@ Repository → Settings → Secrets and variables → Actions → New repository
 | `GMAIL_APP_PASSWORD` | `abcdefghijklmnop` | 16-char Gmail App Password (no spaces) |
 | `GOOGLE_SHEET_ID` | `1BxiMVs0XRA5nFM...` | ID from the Google Sheets URL |
 | `GOOGLE_SERVICE_JSON` | `{"type":"service_account",...}` | Stringified service account JSON key |
-| `NEXT_PUBLIC_SITE_URL` | `https://notify.pduam.dpdns.org` | Full URL of the deployed site (no trailing slash) |
+| `NEXT_PUBLIC_SITE_URL` | `https://notify-pduam.vercel.app` | Full URL of the deployed site (no trailing slash) |
 | `HASH_SALT` | `any-random-secret-string` | Secret salt for SHA-256 IP hashing |
 
 ---
@@ -95,7 +95,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - Used to build absolute URLs for email links (verify, unsubscribe)
 - Must **not** have a trailing slash
 - During local dev: `http://localhost:3000`
-- Production: `https://notify.pduam.dpdns.org`
+- Production: `https://notify-pduam.vercel.app`
 
 ---
 
@@ -109,7 +109,7 @@ GMAIL_APP_PASSWORD=your16charpassword
 GOOGLE_SHEET_ID=your_spreadsheet_id_here
 GOOGLE_SERVICE_JSON={"type":"service_account","project_id":"..."}
 
-NEXT_PUBLIC_SITE_URL=https://notify.pduam.dpdns.org
+NEXT_PUBLIC_SITE_URL=https://notify-pduam.vercel.app
 HASH_SALT=generate-a-random-secret-here
 
 # ── Optional: Email Branding ───────────────────────────────────────────────────

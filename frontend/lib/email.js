@@ -10,7 +10,7 @@ const nodemailer = require('nodemailer');
 const COLLEGE_NAME  = 'Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga';
 const SENDER_NAME   = 'PDUAM NOTIFY';
 const NOTICE_URL    = 'https://pduamamjonga.ac.in/notice';
-const SITE_URL      = () => process.env.NEXT_PUBLIC_SITE_URL || 'https://notify.pduam.dpdns.org';
+const SITE_URL      = () => process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
 
 // ─── Transporter ─────────────────────────────────────────────────────────────
 
@@ -90,7 +90,7 @@ function emailShell(preheader, body) {
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
                   <td width="36" valign="middle" style="padding-right:12px;">
-                    <img src="https://notify.pduam.dpdns.org/icon.svg" width="32" height="32" alt="🔔" style="display:block;">
+                    <img src="https://notify-pduam.vercel.app/icon.svg" width="32" height="32" alt="🔔" style="display:block;">
                   </td>
                   <td valign="middle">
                     <p style="margin:0;font-size:15px;font-weight:800;color:#ffffff;letter-spacing:0.05em;">${SENDER_NAME}</p>

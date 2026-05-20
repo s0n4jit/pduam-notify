@@ -32,7 +32,7 @@ Repository → **Settings → Secrets and variables → Actions → New reposito
 | `GMAIL_APP_PASSWORD` | 16-char App Password |
 | `GOOGLE_SHEET_ID` | Google Spreadsheet ID |
 | `GOOGLE_SERVICE_JSON` | Stringified JSON key (one line) |
-| `NEXT_PUBLIC_SITE_URL` | `https://notify.pduam.dpdns.org` |
+| `NEXT_PUBLIC_SITE_URL` | `https://notify-pduam.vercel.app` |
 | `HASH_SALT` | Random secret string |
 | `TELEGRAM_BOT_TOKEN` | *(optional)* |
 | `TELEGRAM_CHANNEL_ID` | *(optional)* |

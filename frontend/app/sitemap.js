@@ -4,7 +4,7 @@
  */
 
 export default function sitemap() {
-  const base = 'https://notify.pduam.dpdns.org';
+  const base = 'https://notify-pduam.vercel.app';
   const now  = new Date().toISOString();
 
   return [

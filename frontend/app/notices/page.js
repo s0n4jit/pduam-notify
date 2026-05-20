@@ -1,6 +1,6 @@
 import NoticeList from '@/components/NoticeList';
 
-const SITE_URL = 'https://notify.pduam.dpdns.org';
+const SITE_URL = 'https://notify-pduam.vercel.app';
 
 export const metadata = {
   title:       'Notice History',

@@ -1,4 +1,4 @@
-const SITE_URL = 'https://notify.pduam.dpdns.org';
+const SITE_URL = 'https://notify-pduam.vercel.app';
 
 export const metadata = {
   title:       'About',

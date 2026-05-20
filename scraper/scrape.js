@@ -27,7 +27,7 @@ const { google } = require('googleapis');
 const NOTICE_URL = 'https://pduamamjonga.ac.in/notice';
 const COLLEGE_NAME = 'Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga';
 const COLLEGE_SHORT = 'PDUAM';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://pduam-notify.vercel.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
 const MAX_RETRIES = 3;
 
 // Telegram channel link (derived from @username)
