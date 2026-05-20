@@ -2,7 +2,7 @@
 
 > Automated email & Telegram notification platform for college notices from [Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga](https://pduamamjonga.ac.in/notice).
 
-**Live:** [notify.pduam.dpdns.org](https://notify.pduam.dpdns.org)
+**Live:** [notify-pduam.app](https://notify-pduam.vercel.app/)
 
 ---
 
