@@ -1,6 +1,20 @@
 {
-  "lastChecked": "2026-05-20T23:58:12.204Z",
+  "lastChecked": "2026-05-21T11:56:50.873Z",
   "notices": [
+    {
+      "date": "2026-05-20",
+      "title": "HS Second Year Re-Admission notice for the academic session 2026-27 for those students who were unsuccessful in the HS Final Year Examination 2026",
+      "url": "https://pduamamjonga.ac.in/files/6149-20260521144710.pdf",
+      "hash": "d270be263fdffd9f0ef4167fff52ed531b1e95ad38b6da84d6c0fbe374b925a5",
+      "detected_at": "2026-05-21T11:56:50.873Z"
+    },
+    {
+      "date": "2026-05-18",
+      "title": "FYUGP (BA & BSc) First Semester Admission notice for the academic session 2026-27",
+      "url": "https://pduamamjonga.ac.in/files/9601-20260521144521.pdf",
+      "hash": "b83cbcaef9f8494d8e7b53e74df2d086950c3b072116cf7c9ecf53ec530c0de6",
+      "detected_at": "2026-05-21T11:56:50.873Z"
+    },
     {
       "date": "2026-05-15",
       "title": "Notice regarding start of classes of HS First year for the academic session 2026-27",
