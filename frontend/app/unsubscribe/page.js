@@ -1,12 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function UnsubscribePage() {
+function UnsubscribeContent() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const prefillEmail = searchParams.get('email');
+    if (prefillEmail) {
+      setEmail(prefillEmail);
+    }
+  }, [searchParams]);
 
   const handleUnsubscribe = async (e) => {
     e.preventDefault();
@@ -118,5 +127,22 @@ export default function UnsubscribePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function UnsubscribePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[60vh] flex items-center justify-center px-4 py-16">
+        <div className="glass p-8 w-full max-w-md text-center rounded-[2rem] shadow-2xl">
+          <div className="w-16 h-16 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-5 text-3xl animate-pulse">
+            ⏳
+          </div>
+          <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--text)' }}>Loading...</h1>
+        </div>
+      </div>
+    }>
+      <UnsubscribeContent />
+    </Suspense>
   );
 }
