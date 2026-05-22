@@ -277,7 +277,7 @@ function pageShell({ title, bodyContent, siteUrl }) {
 // ─── Success page ──────────────────────────────────────────────────────────────
 
 function successHtml(email) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
   const REDIRECT_SEC = 10;
 
   const body = `
@@ -342,7 +342,7 @@ function successHtml(email) {
 // ─── Error page ───────────────────────────────────────────────────────────────
 
 function errorHtml(message, { showResend = false } = {}) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
 
   const resendSection = showResend ? `
     <div style="margin-top:1.5rem;">

@@ -24,7 +24,9 @@ function createTransporter() {
 // ─── Shared Shell ─────────────────────────────────────────────────────────────
 // Dark-mode-aware, table-based HTML email (Gmail/Outlook compatible)
 
-function emailShell(preheader, body) {
+function emailShell(preheader, body, { unsubscribeUrl } = {}) {
+  const unsubscribeLink = unsubscribeUrl || `${SITE_URL()}/unsubscribe`;
+
   return `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -117,7 +119,7 @@ function emailShell(preheader, body) {
                 <a href="${SITE_URL()}" style="color:#2563eb;text-decoration:none;">${SITE_URL().replace('https://', '')}</a>
               </p>
               <p style="margin:8px 0 0;font-size:11px;text-align:center;">
-                <a href="${SITE_URL()}/unsubscribe" style="color:#64748b;text-decoration:underline;">Unsubscribe</a>
+                <a href="${unsubscribeLink}" style="color:#64748b;text-decoration:underline;">Unsubscribe</a>
                 <span style="color:#cbd5e1;padding:0 8px;">·</span>
                 <a href="${SITE_URL()}/privacy-policy" style="color:#64748b;text-decoration:underline;">Privacy Policy</a>
                 <span style="color:#cbd5e1;padding:0 8px;">·</span>
@@ -193,17 +195,21 @@ function buildVerificationEmail(email, token) {
     </p>`;
 
   const text = `Verify your email for ${SENDER_NAME}\n\nClick this link to confirm:\n${url}\n\nLink expires in 1 hour.\n\nIf you didn't subscribe, ignore this email.`;
-  const html = emailShell(`Confirm your email to start receiving PDUAM notice alerts.`, body);
+  const html = emailShell(
+    `Confirm your email to start receiving PDUAM notice alerts.`,
+    body,
+    { unsubscribeUrl: `${SITE_URL()}/unsubscribe?email=${encodeURIComponent(email)}` }
+  );
 
   return { html, text };
 }
 
 // ─── Notice Alert Email ───────────────────────────────────────────────────────
 
-function buildNoticeEmail(notices, unsubToken) {
+function buildNoticeEmail(notices, unsubToken, email) {
   const unsubUrl = unsubToken
     ? `${SITE_URL()}/api/unsubscribe?token=${unsubToken}`
-    : `${SITE_URL()}/unsubscribe`;
+    : `${SITE_URL()}/unsubscribe?email=${encodeURIComponent(email)}`;
 
   const count = notices.length;
 
@@ -267,10 +273,14 @@ function buildNoticeEmail(notices, unsubToken) {
 
   const text = notices.map(n =>
     `• ${n.date ? `[${n.date}] ` : ''}${n.title}\n  ${n.url}`
-  ).join('\n') + `\n\nView all notices: ${NOTICE_URL}\nUnsubscribe: ${unsubUrl}`;
+  ).join('\n') + `\n\nView all notices: ${NOTICE_URL}\nUnsubscribe: ${unsubUrl}` + (email ? `\nManage subscription: ${SITE_URL()}/unsubscribe?email=${encodeURIComponent(email)}` : '');
 
   const preheader = `${count} new notice${count > 1 ? 's' : ''} from PDUAM Amjonga — ${notices[0]?.title || 'check the notice board'}`;
-  const html = emailShell(preheader, body);
+  const html = emailShell(
+    preheader,
+    body,
+    { unsubscribeUrl: `${SITE_URL()}/unsubscribe?email=${encodeURIComponent(email)}` }
+  );
 
   return { html, text };
 }
@@ -350,7 +360,7 @@ async function sendNoticeAlerts(subscribers, notices, getUnsubToken) {
   let sent = 0, failed = 0;
   for (const sub of subscribers) {
     const token       = getUnsubToken ? await getUnsubToken(sub.email) : null;
-    const { html, text } = buildNoticeEmail(notices, token);
+    const { html, text } = buildNoticeEmail(notices, token, sub.email);
     const dateStr     = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
     const subj        = `[${dateStr}] ${notices.length} New Notice${notices.length > 1 ? 's' : ''} — ${SENDER_NAME}`;
     const r           = await sendEmail({ to: sub.email, subject: subj, html, text });

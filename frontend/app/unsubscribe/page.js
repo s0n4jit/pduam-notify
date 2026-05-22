@@ -1,12 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function UnsubscribePage() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const prefillEmail = searchParams.get('email');
+    if (prefillEmail) {
+      setEmail(prefillEmail);
+    }
+  }, [searchParams]);
 
   const handleUnsubscribe = async (e) => {
     e.preventDefault();
