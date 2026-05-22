@@ -43,7 +43,7 @@ export async function GET(req) {
     } catch {}
 
     // Redirect to success page
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
     return NextResponse.redirect(`${siteUrl}/unsubscribe?success=true`);
   } catch (err) {
     console.error('[unsubscribe] GET error:', err);
