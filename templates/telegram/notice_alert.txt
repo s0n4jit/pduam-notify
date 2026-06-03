@@ -1,0 +1,6 @@
+🔔 *{{COUNT}} New Notice{{PLURAL_S}} — {{COLLEGE_SHORT}}*
+📅 _{{DATE}}_
+
+{{NOTICES}}
+
+🌐 [View All Notices]({{NOTICE_URL}}) · [Subscribe for Email]({{SITE_URL}}){{TELEGRAM_LINK_MD}}

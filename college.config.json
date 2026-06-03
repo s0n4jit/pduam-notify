@@ -1,0 +1,8 @@
+{
+  "collegeName": "Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga",
+  "collegeShort": "PDUAM",
+  "siteName": "PDUAM NOTIFY",
+  "noticeUrl": "https://pduamamjonga.ac.in/notice",
+  "scrapeRowSelector": "li",
+  "scrapeDateRegex": "^(\\d{4}-\\d{2}-\\d{2})"
+}

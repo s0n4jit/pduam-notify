@@ -6,10 +6,13 @@ import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import Script from 'next/script';
+import config from '@/lib/config';
 
-const SITE_URL  = 'https://notify-pduam.vercel.app';
-const SITE_NAME = 'PDUAM NOTIFY';
-const COLLEGE   = 'Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya, Amjonga';
+
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
+const SITE_NAME = config.siteName;
+const COLLEGE   = config.collegeName;
 
 // ── Viewport ─────────────────────────────────────────────────────────────────
 export const viewport = {
@@ -37,9 +40,9 @@ export const metadata = {
     `Get instant email alerts for new notices from ${COLLEGE}. Subscribe free — never miss an exam schedule, admission update, or college announcement.`,
 
   keywords: [
-    'PDUAM', 'PDUAM Amjonga', 'Pandit Deendayal Upadhyaya Adarsha Mahavidyalaya',
-    'college notices', 'notice alerts', 'email alerts', 'Amjonga college',
-    'PDUAM NOTIFY', 'college notifications', 'Assam college notices',
+    config.collegeShort, `${config.collegeShort} Notices`, config.collegeName,
+    'college notices', 'notice alerts', 'email alerts',
+    config.siteName, 'college notifications',
   ],
 
   authors:  [{ name: SITE_NAME, url: SITE_URL }],
@@ -142,6 +145,11 @@ export default function RootLayout({ children }) {
         </div>
         <Analytics />
         <SpeedInsights />
+        <Script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="7a7bf464-7ace-45aa-bc3d-9da298e3478d"
+        />
       </body>
     </html>
   );

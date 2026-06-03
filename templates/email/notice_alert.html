@@ -1,0 +1,41 @@
+<!-- Header row -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
+  <tr>
+    <td>
+      <p style="margin:0;font-size:11px;font-weight:700;color:#4f46e5;text-transform:uppercase;letter-spacing:0.1em;">Notice board update</p>
+      <h1 class="text-dark" style="margin:6px 0 0;font-size:24px;font-weight:800;color:#111827;letter-spacing:-0.02em;display:flex;align-items:center;">
+        <img src="https://img.icons8.com/color/96/alarm.png" width="28" height="28" alt="Bell" style="margin-right:8px; display:inline-block; vertical-align:middle;">
+        {{COUNT}} New Notice{{PLURAL_S}}
+      </h1>
+      <p class="text-muted" style="margin:8px 0 0;font-size:14px;color:#4b5563;line-height:1.5;">
+        {{COLLEGE_MESSAGE_INTRO}}
+      </p>
+    </td>
+  </tr>
+</table>
+
+<!-- Notice list -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+  style="border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;margin-bottom:28px;border-spacing:0;border-collapse:separate;" class="email-card">
+  {{NOTICE_ROWS}}
+</table>
+
+<!-- Primary CTA -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:8px;">
+  <tr>
+    <td align="center" style="padding-bottom:12px;">
+      <a href="{{SITE_URL}}/notices" class="btn-primary"
+        style="display:inline-block;background: linear-gradient(135deg, #4f46e5, #6366f1);color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:12px;font-weight:700;font-size:14px;box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">
+        View Notice Board →
+      </a>
+    </td>
+  </tr>
+</table>
+
+{{TELEGRAM_BUTTON_HTML}}
+
+<!-- Unsubscribe nudge -->
+<p class="text-subtle" style="margin:0;font-size:11px;text-align:center;color:#9ca3af;">
+  Don't want these alerts?
+  <a href="{{UNSUBSCRIBE_URL}}" style="color:#6b7280;text-decoration:underline;">Unsubscribe instantly</a>
+</p>
