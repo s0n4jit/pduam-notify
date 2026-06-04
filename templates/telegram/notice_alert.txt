@@ -1,6 +1,9 @@
-🔔 *{{COUNT}} New Notice{{PLURAL_S}} — {{COLLEGE_SHORT}}*
+📢 *Notice Board Update — {{COLLEGE_SHORT}}*
 📅 _{{DATE}}_
+
+We have detected *{{COUNT}}* new notice{{PLURAL_S}} posted on the college board:
 
 {{NOTICES}}
 
-🌐 [View All Notices]({{NOTICE_URL}}) · [Subscribe for Email]({{SITE_URL}}){{TELEGRAM_LINK_MD}}
+━━━━━━━━━━━━━━━━━━━
+🌐 [View Notice Board]({{SITE_URL}}/notices)  |  ✉️ [Get Email Alerts]({{SITE_URL}}){{TELEGRAM_LINK_MD}}
