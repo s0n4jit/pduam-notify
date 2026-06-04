@@ -14,7 +14,7 @@ const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.verc
 const SITE_NAME = config.siteName;
 const COLLEGE   = config.collegeName;
 
-// ── Viewport ─────────────────────────────────────────────────────────────────
+// ── Viewport ───────────────────────────────────────────────────────────[...]
 export const viewport = {
   width:        'device-width',
   initialScale: 1,
@@ -27,7 +27,7 @@ export const viewport = {
   ],
 };
 
-// ── Root Metadata ─────────────────────────────────────────────────────────────
+// ── Root Metadata ─────────────────────────────────────────────────────────…[...]
 export const metadata = {
   metadataBase: new URL(SITE_URL),
 
@@ -98,13 +98,15 @@ export const metadata = {
     },
   },
 
-  // Verification placeholders (fill in if you connect Search Console etc.)
-  // verification: { google: 'XXXX', yandex: 'XXXX' },
+  // Google Site Verification
+  verification: {
+    google: 'YfASj0Zja5x0eN-JDqK9ZHFxJFnLgJ1otOp9UVRnHqw',
+  },
 
   category: 'education',
 };
 
-// ── Font ──────────────────────────────────────────────────────────────────────
+// ── Font ────────────────────────────────────────────────────────────[...]
 const inter = Inter({
   subsets:  ['latin'],
   variable: '--font-inter',
@@ -112,7 +114,7 @@ const inter = Inter({
   weight:   ['400', '500', '600', '700', '800'],
 });
 
-// ── Layout ────────────────────────────────────────────────────────────────────
+// ── Layout ───────────────────────────────────────────────────────────…[...]
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
@@ -125,7 +127,7 @@ export default function RootLayout({ children }) {
         */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(s===null&&d)){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();`,
+            __html: `(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(s===null&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
           }}
         />
       </head>
