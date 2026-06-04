@@ -9,4 +9,4 @@ Disallow: /api/unsubscribe
 Disallow: /api/resend-verification
 
 # Sitemap
-Sitemap: https://notify.pduam.dpdns.org/sitemap.xml
+Sitemap: https://notify-pduam.vercel.app/sitemap.xml
