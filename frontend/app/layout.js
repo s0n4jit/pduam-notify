@@ -149,7 +149,7 @@ export default function RootLayout({ children }) {
           defer
           src="/stats/script.js"
           data-website-id="7a7bf464-7ace-45aa-bc3d-9da298e3478d"
-          data-host-url={SITE_URL}
+          data-host-url={`${SITE_URL}/stats`}
         />
       </body>
     </html>
