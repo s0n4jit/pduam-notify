@@ -49,6 +49,15 @@ const nextConfig = {
       },
     ];
   },
+
+  async rewrites() {
+    return [
+      {
+        source: '/stats/:match*',
+        destination: 'https://cloud.umami.is/:match*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
