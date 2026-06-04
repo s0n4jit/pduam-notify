@@ -6,4 +6,4 @@ We have detected *{{COUNT}}* new notice{{PLURAL_S}} posted on the college board:
 {{NOTICES}}
 
 ━━━━━━━━━━━━━━━━━━━
-🌐 [View Notice Board]({{SITE_URL}}/notices)  |  ✉️ [Get Email Alerts]({{SITE_URL}}){{TELEGRAM_LINK_MD}}
+🌐 [View Notice Board]({{SITE_URL}}/notices?utm_source=telegram&utm_medium=channel&utm_campaign=notice_board)  |  ✉️ [Get Email Alerts]({{SITE_URL}}?utm_source=telegram&utm_medium=channel&utm_campaign=notice_board){{TELEGRAM_LINK_MD}}
