@@ -19,11 +19,32 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
-      - name: Install scraper dependencies
-        working-directory: scraper
-        run: npm ci || npm install
+      - name: Install dependencies
+        run: |
+          echo "Installing root dependencies..."
+          npm install
+          echo "Installing frontend dependencies..."
+          cd frontend && npm install && cd ..
+          echo "Installing scraper dependencies..."
+          cd scraper && npm install && cd ..
+          echo "Dependency installation complete"
+
+      - name: Verify dependencies
+        run: |
+          echo "=== Checking nodemailer availability ==="
+          if [ -d "frontend/node_modules/nodemailer" ]; then
+            echo "✓ nodemailer found in frontend/node_modules"
+          else
+            echo "✗ WARNING: nodemailer NOT in frontend/node_modules"
+          fi
+          if [ -d "scraper/node_modules/nodemailer" ]; then
+            echo "✓ nodemailer found in scraper/node_modules"
+          else
+            echo "✗ WARNING: nodemailer NOT in scraper/node_modules"
+          fi
+          echo "=== Dependency Check Complete ==="
 
       - name: Run scraper
         working-directory: scraper
