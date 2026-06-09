@@ -1,6 +1,20 @@
 {
-  "lastChecked": "2026-06-08T21:13:48.498Z",
+  "lastChecked": "2026-06-09T18:33:04.209Z",
   "notices": [
+    {
+      "date": "2026-06-09",
+      "title": "Notice regarding Publication of 2nd Merit List for Admission into FYUGP (B.A) offered by PDUAM, Amjonga",
+      "url": "https://pduamamjonga.ac.in/files/6699-20260609215154.pdf",
+      "hash": "f5e739cd2264cf77973b10109e621562654b1f76da9a539a759323b96de32a3d",
+      "detected_at": "2026-06-09T18:33:04.209Z"
+    },
+    {
+      "date": "2026-06-09",
+      "title": "Notice regarding Publication of 2nd Merit List for Admission into FYUGP (B.Sc.) offered by PDUAM, Amjonga",
+      "url": "https://pduamamjonga.ac.in/files/6522-20260609215111.pdf",
+      "hash": "22ac253b5f384989b67f5521120cc089540466c5d620bc8c36cda5488c689029",
+      "detected_at": "2026-06-09T18:33:04.209Z"
+    },
     {
       "date": "2026-06-03",
       "title": "Merit List for admission into BA First semester (2026-27)",
