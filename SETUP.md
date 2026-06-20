@@ -1,6 +1,6 @@
-# PDUAM Notify v3 - Comprehensive Setup Guide
+# PDUAM Notify - Comprehensive Setup Guide
 
-This guide details the complete end-to-end setup process for **PDUAM Notify v3**. Follow these steps to configure the Google Sheets database, Gmail SMTP mailer, Telegram Channel Bot, Cloudflare Worker API, Vercel Frontend, and GitHub Actions workflow.
+This guide details the complete end-to-end setup process for **PDUAM Notify**. Follow these steps to configure the Google Sheets database, Gmail SMTP mailer, Telegram Channel Bot, Cloudflare Worker API, Vercel Frontend, and GitHub Actions workflow.
 
 ---
 
@@ -98,7 +98,7 @@ The worker acts as the scheduler for scraping and maintains Google Sheets. It is
    ```
 4. Deploy the worker to production:
    ```bash
-   npm run deploy:notice-service
+   npm run deploy
    ```
 
 ---
@@ -112,9 +112,14 @@ The Next.js user interface is deployed to Vercel.
 3. Configure the following environment variables in Vercel settings (Project Settings -> Environment Variables):
    * `GOOGLE_SERVICE_JSON` (Paste the entire stringified service account JSON)
    * `GOOGLE_SHEET_ID` (Your Google Sheets ID)
-   * `HASH_SALT` (A random salt for hashing IPs)
-   * `API_URL` (Your deployed Cloudflare Worker API URL: `https://api.sonajit.in`)
+   * `HASH_SALT` (A random salt for hashing IPs, generate using `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`)
+   * `API_URL` (Your deployed Cloudflare Worker API URL: `https://api.sonajit.in` or `https://api.sonajit.in/notices`)
    * `API_SECRET_KEY` (The private auth key matching your worker's secret)
+   * `GMAIL_USER` (Your Gmail address)
+   * `GMAIL_APP_PASSWORD` (Your 16-character Gmail App Password)
+   * `CUSTOM_FROM_EMAIL` (Custom sender email, e.g., `notifications@yourdomain.com`)
+   * `REPLY_TO_EMAIL` (Reply-to address, e.g., `contact@yourdomain.com`)
+   * `NEXT_PUBLIC_SITE_URL` (Your Vercel site URL)
 4. Trigger the deploy.
 
 ---
@@ -143,10 +148,10 @@ The workflow (`.github/workflows/notify.yml`) will automatically run and send em
 
 | Variable Name | Required In | Description |
 |---|---|---|
-| `GMAIL_USER` | Actions | Your Google account email address. |
-| `GMAIL_APP_PASSWORD` | Actions | 16-character Gmail app password. |
-| `CUSTOM_FROM_EMAIL` | Actions | The display sender address. |
-| `REPLY_TO_EMAIL` | Actions | The reply-to address for emails. |
+| `GMAIL_USER` | Actions, Vercel | Your Google account email address. |
+| `GMAIL_APP_PASSWORD` | Actions, Vercel | 16-character Gmail app password. |
+| `CUSTOM_FROM_EMAIL` | Actions, Vercel | The display sender address. |
+| `REPLY_TO_EMAIL` | Actions, Vercel | The reply-to address for emails. |
 | `GOOGLE_SHEET_ID` | Actions, Worker, Vercel | The ID of your Google Spreadsheet database. |
 | `GOOGLE_SERVICE_JSON` | Actions, Worker, Vercel | Entire contents of Google JSON credentials file. |
 | `HASH_SALT` | Vercel | Random hash salt used to hash subscriber IPs securely. |
@@ -154,6 +159,7 @@ The workflow (`.github/workflows/notify.yml`) will automatically run and send em
 | `TELEGRAM_CHANNEL_ID` | Actions | Channel username (e.g. `@pduam_notices`). |
 | `API_URL` | Vercel | Deployed Cloudflare Worker base domain URL. |
 | `API_SECRET_KEY` | Worker, Vercel | Private key used for API Authorization headers. |
+| `NEXT_PUBLIC_SITE_URL` | Actions, Vercel | Your Vercel site URL. |
 
 ---
 
@@ -161,13 +167,13 @@ The workflow (`.github/workflows/notify.yml`) will automatically run and send em
 
 To run the Next.js frontend locally:
 
-1. Navigate to the root directory and copy the environment variables:
+1. Copy `.env.example` to `.env` in the root:
    ```bash
-   cp .env frontend/.env.local
+   cp .env.example .env
    ```
-2. Navigate to the `frontend` folder and run Next.js:
+   Fill in all variables in `.env`.
+2. Run the Next.js application:
    ```bash
-   cd frontend
    npm install
    npm run dev
    ```
