@@ -170,17 +170,32 @@ function getNewNotices() {
     // In case of error (e.g. first commit or no history), fallback to all fresh notices that are detected within the last 15 minutes
     const now = Date.now();
     const recent = currentNotices.filter(n => {
-      if (!n.detected_at) return false;
+      if (!n.detected_at || !n.date) return false;
       const detectedTime = new Date(n.detected_at).getTime();
-      return (now - detectedTime) < 15 * 60 * 1000;
+      const noticeTime = new Date(n.date).getTime();
+      const ageInDays = (now - noticeTime) / (1000 * 60 * 60 * 24);
+      return (now - detectedTime) < 15 * 60 * 1000 && ageInDays <= 7;
     });
-    log('diff', `Fallback found ${recent.length} recently detected notices.`);
+    log('diff', `Fallback found ${recent.length} recently detected fresh notices.`);
     return recent;
   }
 
   const previousHashes = new Set(previousNotices.map(n => n.hash));
-  const newNotices = currentNotices.filter(n => !previousHashes.has(n.hash));
+  let newNotices = currentNotices.filter(n => !previousHashes.has(n.hash));
   
+  // Safeguard: Filter out notices older than 7 days to prevent old notice spam
+  const now = Date.now();
+  newNotices = newNotices.filter(n => {
+    if (!n.date) return false;
+    const noticeTime = new Date(n.date).getTime();
+    const ageInDays = (now - noticeTime) / (1000 * 60 * 60 * 24);
+    if (ageInDays > 7) {
+      log('diff', `Skipping old notice notification: "${n.title}" (${n.date})`);
+      return false;
+    }
+    return true;
+  });
+
   log('diff', `Detected ${newNotices.length} new notices by comparing hashes.`);
   return newNotices;
 }
