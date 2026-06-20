@@ -112,29 +112,35 @@ async function sendEmailAlerts(subscribers, notices) {
     return;
   }
 
-  let sent = 0, failed = 0;
-  for (const sub of subscribers) {
-    try {
-      const { html, text } = buildNoticeEmail(notices, null, sub.email);
-      const dateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-      const subject = `[${config.siteName}] ${notices.length} New Notice board update${notices.length > 1 ? 's' : ''} - ${dateStr}`;
+  const fromEmail = process.env.CUSTOM_FROM_EMAIL || process.env.GMAIL_USER;
+  const { html, text } = buildNoticeEmail(notices, null, null);
+  const dateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  const subject = `[${config.siteName}] ${notices.length} New Notice board update${notices.length > 1 ? 's' : ''} - ${dateStr}`;
 
+  const BATCH_SIZE = 90;
+  let sent = 0, failed = 0;
+
+  for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
+    const batch = subscribers.slice(i, i + BATCH_SIZE);
+    const bccList = batch.map(s => s.email);
+
+    try {
       const res = await sendEmail({
-        to: sub.email,
+        bcc: bccList,
         subject,
         html,
         text,
       });
 
       if (res.success) {
-        sent++;
-        log('email', `✓ Sent email to ${sub.email}`);
+        sent += batch.length;
+        log('email', `✓ Sent batch of ${batch.length} emails via BCC`);
       } else {
         throw new Error(res.error);
       }
     } catch (err) {
-      failed++;
-      logError('email', `✗ Failed to send to ${sub.email}`, err);
+      failed += batch.length;
+      logError('email', `✗ Failed to send batch of ${batch.length}`, err);
     }
   }
 
