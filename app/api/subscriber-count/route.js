@@ -9,7 +9,9 @@ import { NextResponse } from 'next/server';
 // Cache the response for 60 seconds on the server — avoids hitting Sheets on every page load
 export const revalidate = 60;
 
-const API_URL = process.env.API_URL;
+const API_URL = process.env.API_URL
+  ? process.env.API_URL.replace(/\/notices\/?$/, '').replace(/\/$/, '')
+  : '';
 
 export async function GET() {
   try {
