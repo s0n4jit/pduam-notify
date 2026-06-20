@@ -12,13 +12,13 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get('limit') || '50', 10);
 
-    const notices = getAllNotices();
+    const notices = await getAllNotices();
     const limited = notices.slice(0, Math.min(limit, 500));
 
     return NextResponse.json({
       notices: limited,
       total: notices.length,
-      lastChecked: getLastChecked(),
+      lastChecked: await getLastChecked(),
     }, {
       headers: {
         'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',

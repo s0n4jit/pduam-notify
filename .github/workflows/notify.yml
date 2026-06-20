@@ -1,0 +1,45 @@
+name: PDUAM Notice Notifier
+
+on:
+  push:
+    paths:
+      - 'data/notices.json'
+  workflow_dispatch:
+
+jobs:
+  notify-subscribers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Ensure we fetch at least 2 commits to allow git diff HEAD~1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run notifier
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          CUSTOM_FROM_EMAIL: ${{ secrets.CUSTOM_FROM_EMAIL }}
+          REPLY_TO_EMAIL: ${{ secrets.REPLY_TO_EMAIL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          GOOGLE_SERVICE_JSON: ${{ secrets.GOOGLE_SERVICE_JSON }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: node scripts/notify.js
+
+      - name: Log completion
+        if: always()
+        run: echo "Notifier completed at $(date -u '+%Y-%m-%d %H:%M UTC')"

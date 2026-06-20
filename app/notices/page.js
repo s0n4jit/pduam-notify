@@ -21,10 +21,10 @@ export const metadata = {
 };
 
 
-function getNotices() {
+async function getNotices() {
   try {
     const { getAllNotices } = require('@/lib/notices');
-    return getAllNotices();
+    return await getAllNotices();
   } catch (err) {
     console.error('[notices] Failed to read:', err.message);
     return [];
@@ -33,8 +33,8 @@ function getNotices() {
 
 export const revalidate = 300;
 
-export default function NoticesPage() {
-  const notices = getNotices();
+export default async function NoticesPage() {
+  const notices = await getNotices();
   const withFlags = notices.map((n, i) => ({ ...n, isNew: i < 4 }));
 
   return (

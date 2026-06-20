@@ -9,10 +9,10 @@ export const metadata = {
   title: { absolute: 'PDUAM NOTIFY' },
 };
 
-function getNotices() {
+async function getNotices() {
   try {
     const { getAllNotices } = require('@/lib/notices');
-    return getAllNotices();
+    return await getAllNotices();
   } catch (err) {
     console.error('[homepage] Failed to read notices:', err.message);
     return [];
@@ -21,8 +21,8 @@ function getNotices() {
 
 export const revalidate = 300;
 
-export default function HomePage() {
-  const notices = getNotices();
+export default async function HomePage() {
+  const notices = await getNotices();
   const noticesWithFlag = notices.map((n, i) => ({ ...n, isNew: i < 4 }));
 
   return (

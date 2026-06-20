@@ -1,11 +1,9 @@
 # ── Dependencies ────────────────────────────────────────────────────────────
 node_modules/
-frontend/node_modules/
-scraper/node_modules/
 
 # ── Next.js build output ─────────────────────────────────────────────────────
-frontend/.next/
-frontend/out/
+.next/
+out/
 
 # ── Vercel ───────────────────────────────────────────────────────────────────
 .vercel/
@@ -15,11 +13,9 @@ frontend/out/
 .env.local
 .env.*.local
 *.env
-frontend/.env
-frontend/.env.local
-frontend/.env.*.local
-scraper/.env
-scraper/.env.local
+.env.development
+.env.production
+.env.test
 
 # ── OS generated ─────────────────────────────────────────────────────────────
 .DS_Store
@@ -50,8 +46,8 @@ pnpm-debug.log*
 .history/
 
 # ── Next.js legacy TypeScript stubs (project uses JS) ────────────────────────
-frontend/tsconfig.json
-frontend/next-env.d.ts
+tsconfig.json
+next-env.d.ts
 
 # ── Package manager lock files (keep package-lock.json, ignore others) ────────
 yarn.lock
@@ -70,9 +66,13 @@ dist/
 build/
 .turbo/
 .swc/
-frontend/.swc/
 
 # ── Misc ─────────────────────────────────────────────────────────────────────
 *.tgz
 *.zip
 *.tar.gz
+
+# ── Cloudflare Wrangler ──────────────────────────────────────────────────────
+.wrangler/
+.dev.vars
+

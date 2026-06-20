@@ -1,15 +1,30 @@
 {
   "name": "pduam-notify",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
-  "description": "PDUAM NOTIFY — automated college notice monitoring with email notifications, Google Sheets storage, and Next.js frontend",
   "scripts": {
-    "dev":     "cd frontend && npm run dev",
-    "build":   "cd frontend && npm run build",
-    "start":   "cd frontend && npm run start",
-    "lint":    "cd frontend && npm run lint",
-    "scrape":  "cd scraper  && npm run scrape",
-    "install:all": "cd frontend && npm install && cd ../scraper && npm install"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "notify": "node scripts/notify.js"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0",
+    "googleapis": "^144.0.0",
+    "next": "^16.2.6",
+    "nodemailer": "^9.0.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.0.1",
+    "dotenv": "^17.4.2",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
   },
   "engines": {
     "node": ">=18.0.0"
