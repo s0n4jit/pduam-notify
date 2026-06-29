@@ -18,14 +18,22 @@ export async function GET(req) {
     const token = searchParams.get('token');
 
     if (!token) {
-      return new Response(errorHtml('Missing verification token.'), {
+      return new Response(invalidRedirectHtml('Missing verification token.'), {
+        status: 400, headers: { 'Content-Type': 'text/html' },
+      });
+    }
+
+    // Check if token format is invalid (must be 64 characters of hex)
+    const isValidTokenFormat = /^[0-9a-f]{64}$/i.test(token);
+    if (!isValidTokenFormat) {
+      return new Response(invalidRedirectHtml('This verification link is invalid.'), {
         status: 400, headers: { 'Content-Type': 'text/html' },
       });
     }
 
     const record = await findVerificationToken(token);
     if (!record) {
-      return new Response(errorHtml('Invalid or expired verification link.'), {
+      return new Response(errorHtml('This verification link has expired (links are valid for 5 minutes).', { showResend: true }), {
         status: 404, headers: { 'Content-Type': 'text/html' },
       });
     }
@@ -52,9 +60,15 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing token.' }, { status: 400 });
     }
 
+    // Check if token format is invalid
+    const isValidTokenFormat = /^[0-9a-f]{64}$/i.test(token);
+    if (!isValidTokenFormat) {
+      return NextResponse.json({ error: 'Invalid verification link format.' }, { status: 400 });
+    }
+
     const record = await findVerificationToken(token);
     if (!record) {
-      return NextResponse.json({ error: 'Invalid or expired verification link.' }, { status: 404 });
+      return NextResponse.json({ error: 'This verification link has expired (links are valid for 5 minutes).' }, { status: 404 });
     }
 
     const verified = await verifySubscriber(record.email);
@@ -500,4 +514,53 @@ function errorHtml(message, { showResend = false } = {}) {
   </div>`;
 
   return pageShell({ title: 'Verification Failed — PDUAM NOTIFY', bodyContent: body, siteUrl });
+}
+
+// ─── Invalid Redirect helper for safety auto-redirects ─────────────────────────
+
+function invalidRedirectHtml(message) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
+  const body = `
+  <div class="card">
+    <a href="${siteUrl}" class="brand">
+      <span>🔔</span> PDUAM NOTIFY
+    </a>
+
+    <div class="icon-ring error">❌</div>
+
+    <h1 class="title-error">Invalid Link</h1>
+    <p class="text">${message}</p>
+    
+    <div class="countdown-wrap">
+      <div class="countdown-ring">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle class="track" cx="28" cy="28" r="22"/>
+          <circle class="fill" id="ring-fill" cx="28" cy="28" r="22"/>
+        </svg>
+        <div class="num" id="countdown-num">3</div>
+      </div>
+      <span class="countdown-label">Redirecting to home…</span>
+    </div>
+  </div>
+  <script>
+    var left = 3;
+    var circumference = 2 * Math.PI * 22;
+    var fill = document.getElementById('ring-fill');
+    var numEl = document.getElementById('countdown-num');
+    if (fill) fill.style.strokeDashoffset = '0';
+    var timer = setInterval(function() {
+      left--;
+      if (left <= 0) {
+        clearInterval(timer);
+        window.location.href = "${siteUrl}";
+        return;
+      }
+      if (numEl) numEl.textContent = left;
+      if (fill) {
+        fill.style.strokeDashoffset = circumference * (1 - left / 3);
+      }
+    }, 1000);
+  </script>`;
+
+  return pageShell({ title: 'Invalid Link — PDUAM NOTIFY', bodyContent: body, siteUrl });
 }
