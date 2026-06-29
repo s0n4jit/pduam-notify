@@ -28,8 +28,9 @@ export async function GET(req) {
       }
     }
 
-    if (!token) {
-      return new Response(invalidRedirectHtml('Missing verification token.'), {
+    // Require both token and email to be present for verification
+    if (!token || !email) {
+      return new Response(invalidRedirectHtml('Invalid or incomplete verification link.'), {
         status: 400, headers: { 'Content-Type': 'text/html' },
       });
     }
