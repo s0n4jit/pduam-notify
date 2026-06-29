@@ -363,6 +363,7 @@ function confirmHtml(email, token) {
     });
 
     function successBody(email, siteUrl) {
+      const noticesUrl = siteUrl + '/notices';
       return \`
         <div class="icon-ring success">✅</div>
         <h1 class="title-success">Email Verified!</h1>
@@ -377,18 +378,18 @@ function confirmHtml(email, token) {
               <circle class="track" cx="28" cy="28" r="22"/>
               <circle class="fill" id="ring-fill" cx="28" cy="28" r="22"/>
             </svg>
-            <div class="num" id="countdown-num">10</div>
+            <div class="num" id="countdown-num">5</div>
           </div>
-          <span class="countdown-label">Redirecting to home…</span>
+          <span class="countdown-label">Redirecting to notices…</span>
         </div>
-        <a href="\${siteUrl}" class="btn-primary" id="home-btn">
-          ← Back to PDUAM NOTIFY
+        <a href="\${noticesUrl}" class="btn-primary" id="home-btn">
+          ← Go to Notices
         </a>
       \`;
     }
 
     function startCountdown(siteUrl) {
-      var total = 10;
+      var total = 5;
       var left = total;
       var circumference = 2 * Math.PI * 22;
       var fill = document.getElementById('ring-fill');
@@ -400,7 +401,7 @@ function confirmHtml(email, token) {
         left--;
         if (left <= 0) {
           clearInterval(timer);
-          window.location.href = siteUrl;
+          window.location.href = siteUrl + '/notices';
           return;
         }
         if (numEl) numEl.textContent = left;
