@@ -33,10 +33,10 @@ jobs:
           CUSTOM_FROM_EMAIL: ${{ secrets.CUSTOM_FROM_EMAIL }}
           REPLY_TO_EMAIL: ${{ secrets.REPLY_TO_EMAIL }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          GOOGLE_SERVICE_JSON: ${{ secrets.GOOGLE_SERVICE_JSON }}
-          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          API_URL: ${{ secrets.API_URL }}
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
           BEFORE_SHA: ${{ github.event.before }}
         run: node scripts/notify.js
 

@@ -1,13 +1,12 @@
 /**
  * GET /api/subscriber-count
- * Returns the count of verified subscribers from Google Sheets.
- * Cached for 60 seconds via Next.js route segment config.
+ * Returns the count of verified subscribers from the database.
+ * Force dynamic to ensure real-time consistency.
  */
 
 import { NextResponse } from 'next/server';
 
-// Cache the response for 60 seconds on the server — avoids hitting Sheets on every page load
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 const API_URL = process.env.API_URL
   ? process.env.API_URL.replace(/\/notices\/?$/, '').replace(/\/$/, '')
@@ -21,14 +20,18 @@ export async function GET() {
     }
     const res = await fetch(`${API_URL}/stats/subscribers`, {
       headers,
-      next: { revalidate: 60 }
+      cache: 'no-store'
     });
     if (!res.ok) {
       throw new Error(`API returned status ${res.status}`);
     }
     const data = await res.json();
     return NextResponse.json({ count: data.count }, {
-      headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' },
+      headers: { 
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      },
     });
   } catch (err) {
     console.error('[subscriber-count] Failed:', err.message);

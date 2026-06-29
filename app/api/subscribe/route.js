@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { subscriberExists, addSubscriber, addVerificationToken } from '@/lib/sheets';
+import { getSubscriber, addSubscriber, addVerificationToken } from '@/lib/sheets';
 import { sendVerificationEmail } from '@/lib/email';
 import { generateToken, hashIP, hashUserAgent, isValidEmail } from '@/lib/crypto';
 import { checkRateLimit, checkCooldown } from '@/lib/rate-limit';
@@ -43,9 +43,27 @@ export async function POST(req) {
     }
 
     // Check for existing subscriber
-    const exists = await subscriberExists(email);
-    if (exists) {
-      return NextResponse.json({ status: 'already_subscribed' });
+    const subscriber = await getSubscriber(email);
+    if (subscriber) {
+      if (subscriber.verified === 'true') {
+        return NextResponse.json({ status: 'already_subscribed' });
+      }
+
+      // If registered previously but verification not done yet, resend verification email
+      const token = generateToken();
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+      // Store verification token
+      await addVerificationToken({ email, token, expiresAt });
+
+      // Send verification email
+      const emailResult = await sendVerificationEmail(email, token);
+      if (!emailResult.success) {
+        console.error('[subscribe] Failed to send verification email:', emailResult.error);
+        return NextResponse.json({ error: 'Failed to send verification email. Please try again.' }, { status: 500 });
+      }
+
+      return NextResponse.json({ status: 'verification_sent' }, { status: 201 });
     }
 
     // Generate verification token (expires in 1 hour)

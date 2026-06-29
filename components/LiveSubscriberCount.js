@@ -14,13 +14,19 @@ export default function LiveSubscriberCount() {
   const [display, setDisplay]   = useState('—');
 
   useEffect(() => {
-    fetch('/api/subscriber-count')
-      .then((r) => r.json())
-      .then(({ count: c }) => {
-        if (c === null || c === undefined) { setDisplay('—'); return; }
-        setCount(c);
-      })
-      .catch(() => setDisplay('—'));
+    const fetchCount = () => {
+      fetch('/api/subscriber-count')
+        .then((r) => r.json())
+        .then(({ count: c }) => {
+          if (c === null || c === undefined) { setDisplay('—'); return; }
+          setCount(c);
+        })
+        .catch(() => setDisplay('—'));
+    };
+
+    fetchCount();
+    const interval = setInterval(fetchCount, 10000); // 10s polling
+    return () => clearInterval(interval);
   }, []);
 
   // Animate count-up when value arrives
