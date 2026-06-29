@@ -1,6 +1,9 @@
 /**
  * GET /api/verify-email?token=xxx
- * Verifies a subscriber's email using the token sent via email.
+ * Renders the subscription confirmation page to prevent spam filter auto-verification (GET requests).
+ * 
+ * POST /api/verify-email
+ * Performs the actual subscriber email verification and D1/KV database update.
  */
 
 import { NextResponse } from 'next/server';
@@ -8,6 +11,7 @@ import { findVerificationToken, deleteVerificationToken, verifySubscriber } from
 
 export const dynamic = 'force-dynamic';
 
+// 1. GET: Renders confirmation UI
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
@@ -26,30 +30,45 @@ export async function GET(req) {
       });
     }
 
-    if (new Date(record.expires_at) < new Date()) {
-      await deleteVerificationToken(token);
-      return new Response(errorHtml('This verification link has expired (links are valid for 1 hour).', { showResend: true }), {
-        status: 410, headers: { 'Content-Type': 'text/html' },
-      });
+    // Render the confirmation page requiring a user interaction (button click)
+    return new Response(confirmHtml(record.email, token), {
+      status: 200, headers: { 'Content-Type': 'text/html' },
+    });
+  } catch (err) {
+    console.error('[verify-email] GET Error:', err);
+    return new Response(errorHtml('Something went wrong. Please try again.'), {
+      status: 500, headers: { 'Content-Type': 'text/html' },
+    });
+  }
+}
+
+// 2. POST: Performs the actual DB verification
+export async function POST(req) {
+  try {
+    const body = await req.json();
+    const { token } = body;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Missing token.' }, { status: 400 });
+    }
+
+    const record = await findVerificationToken(token);
+    if (!record) {
+      return NextResponse.json({ error: 'Invalid or expired verification link.' }, { status: 404 });
     }
 
     const verified = await verifySubscriber(record.email);
     if (!verified) {
-      return new Response(errorHtml('Could not verify email. Subscriber not found.'), {
-        status: 404, headers: { 'Content-Type': 'text/html' },
-      });
+      return NextResponse.json({ error: 'Could not verify email. Subscriber not found.' }, { status: 404 });
     }
 
+    // Delete the token since verification is complete
     await deleteVerificationToken(token);
 
-    return new Response(successHtml(record.email), {
-      status: 200, headers: { 'Content-Type': 'text/html' },
-    });
+    return NextResponse.json({ success: true, email: record.email }, { status: 200 });
   } catch (err) {
-    console.error('[verify-email] Error:', err);
-    return new Response(errorHtml('Something went wrong. Please try again.'), {
-      status: 500, headers: { 'Content-Type': 'text/html' },
-    });
+    console.error('[verify-email] POST Error:', err);
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }
 
@@ -226,11 +245,14 @@ function pageShell({ title, bodyContent, siteUrl }) {
       font-weight: 700;
       font-size: 14px;
       width: 100%;
+      border: none;
+      cursor: pointer;
       box-shadow: 0 4px 16px rgba(37,99,235,0.3);
       transition: opacity 0.15s, transform 0.1s;
     }
     .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     .btn-ghost {
       display: inline-flex;
@@ -249,23 +271,6 @@ function pageShell({ title, bodyContent, siteUrl }) {
       transition: opacity 0.15s;
     }
     .btn-ghost:hover { opacity: 0.8; }
-
-    /* Amber tip box */
-    .tip {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      text-align: left;
-      background: rgba(245,158,11,0.08);
-      border: 1px solid rgba(245,158,11,0.2);
-      border-radius: 0.625rem;
-      padding: 0.625rem 0.875rem;
-      margin-bottom: 1.5rem;
-      font-size: 12px;
-      color: rgba(255,255,255,0.55);
-      line-height: 1.5;
-    }
-    .tip strong { color: #f59e0b; }
   </style>
 </head>
 <body>
@@ -274,69 +279,115 @@ function pageShell({ title, bodyContent, siteUrl }) {
 </html>`;
 }
 
-// ─── Success page ──────────────────────────────────────────────────────────────
+// ─── Confirmation page ─────────────────────────────────────────────────────────
 
-function successHtml(email) {
+function confirmHtml(email, token) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
-  const REDIRECT_SEC = 10;
-
   const body = `
-  <div class="card">
+  <div class="card" id="card-content">
     <a href="${siteUrl}" class="brand">
       <span>🔔</span> PDUAM NOTIFY
     </a>
 
-    <div class="icon-ring success">✅</div>
+    <div class="icon-ring success" style="background:rgba(37,99,235,0.12);border:1.5px solid rgba(37,99,235,0.3);box-shadow:0 0 32px rgba(37,99,235,0.15)">📧</div>
 
-    <h1 class="title-success">Email Verified!</h1>
+    <h1 class="title-success" style="color:#60a5fa;margin-bottom:0.8rem">Confirm Subscription</h1>
     <div class="email-badge">${email}</div>
     <p class="text">
-      Your email has been confirmed. You'll now receive instant alerts
-      whenever a new notice is posted on the college notice board.
+      Please confirm that you want to subscribe to instant notice alerts from PDUAM Amjonga.
     </p>
 
-    <!-- Countdown ring -->
-    <div class="countdown-wrap">
-      <div class="countdown-ring">
-        <svg width="56" height="56" viewBox="0 0 56 56">
-          <circle class="track" cx="28" cy="28" r="22"/>
-          <circle class="fill" id="ring-fill" cx="28" cy="28" r="22"/>
-        </svg>
-        <div class="num" id="countdown-num">${REDIRECT_SEC}</div>
-      </div>
-      <span class="countdown-label">Redirecting to home…</span>
-    </div>
-
-    <a href="${siteUrl}" class="btn-primary" id="home-btn">
-      ← Back to PDUAM NOTIFY
-    </a>
+    <button class="btn-primary" id="verify-btn">
+      ✓ Confirm Subscription
+    </button>
   </div>
 
   <script>
-    (function() {
-      var total   = ${REDIRECT_SEC};
-      var left    = total;
-      var circumference = 2 * Math.PI * 22; // ≈ 138.2
-      var fill    = document.getElementById('ring-fill');
-      var numEl   = document.getElementById('countdown-num');
+    document.getElementById('verify-btn').addEventListener('click', async function() {
+      const btn = document.getElementById('verify-btn');
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
 
-      fill.style.strokeDashoffset = '0';
+      try {
+        const res = await fetch('/api/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: '${token}' }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          document.getElementById('card-content').innerHTML = successBody(data.email, '${siteUrl}');
+          startCountdown('${siteUrl}');
+        } else {
+          document.getElementById('card-content').innerHTML = \`
+            <div class="icon-ring error">❌</div>
+            <h1 class="title-error">Verification Failed</h1>
+            <p class="text">\${data.error || 'Something went wrong. Please try again.'}</p>
+            <a href="${siteUrl}" class="btn-ghost" style="margin-top:1rem;">← Back to home</a>
+          \`;
+        }
+      } catch (err) {
+        document.getElementById('card-content').innerHTML = \`
+          <div class="icon-ring error">❌</div>
+          <h1 class="title-error">Verification Failed</h1>
+          <p class="text">Network error. Please check your connection and try again.</p>
+          <a href="${siteUrl}" class="btn-ghost" style="margin-top:1rem;">← Back to home</a>
+        \`;
+      }
+    });
+
+    function successBody(email, siteUrl) {
+      return \`
+        <div class="icon-ring success">✅</div>
+        <h1 class="title-success">Email Verified!</h1>
+        <div class="email-badge">\${email}</div>
+        <p class="text">
+          Your email has been confirmed. You'll now receive instant alerts
+          whenever a new notice is posted on the college notice board.
+        </p>
+        <div class="countdown-wrap">
+          <div class="countdown-ring">
+            <svg width="56" height="56" viewBox="0 0 56 56">
+              <circle class="track" cx="28" cy="28" r="22"/>
+              <circle class="fill" id="ring-fill" cx="28" cy="28" r="22"/>
+            </svg>
+            <div class="num" id="countdown-num">10</div>
+          </div>
+          <span class="countdown-label">Redirecting to home…</span>
+        </div>
+        <a href="\${siteUrl}" class="btn-primary" id="home-btn">
+          ← Back to PDUAM NOTIFY
+        </a>
+      \`;
+    }
+
+    function startCountdown(siteUrl) {
+      var total = 10;
+      var left = total;
+      var circumference = 2 * Math.PI * 22;
+      var fill = document.getElementById('ring-fill');
+      var numEl = document.getElementById('countdown-num');
+
+      if (fill) fill.style.strokeDashoffset = '0';
 
       var timer = setInterval(function() {
         left--;
         if (left <= 0) {
           clearInterval(timer);
-          window.location.href = '${siteUrl}';
+          window.location.href = siteUrl;
           return;
         }
-        numEl.textContent = left;
-        var offset = circumference * (1 - left / total);
-        fill.style.strokeDashoffset = offset;
+        if (numEl) numEl.textContent = left;
+        if (fill) {
+          var offset = circumference * (1 - left / total);
+          fill.style.strokeDashoffset = offset;
+        }
       }, 1000);
-    })();
+    }
   </script>`;
 
-  return pageShell({ title: 'Email Verified — PDUAM NOTIFY', bodyContent: body, siteUrl });
+  return pageShell({ title: 'Confirm Subscription — PDUAM NOTIFY', bodyContent: body, siteUrl });
 }
 
 // ─── Error page ───────────────────────────────────────────────────────────────
@@ -450,4 +501,3 @@ function errorHtml(message, { showResend = false } = {}) {
 
   return pageShell({ title: 'Verification Failed — PDUAM NOTIFY', bodyContent: body, siteUrl });
 }
-

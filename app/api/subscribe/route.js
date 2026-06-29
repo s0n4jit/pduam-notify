@@ -51,7 +51,7 @@ export async function POST(req) {
 
       // If registered previously but verification not done yet, resend verification email
       const token = generateToken();
-      const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
       // Store verification token
       await addVerificationToken({ email, token, expiresAt });
@@ -66,9 +66,9 @@ export async function POST(req) {
       return NextResponse.json({ status: 'verification_sent' }, { status: 201 });
     }
 
-    // Generate verification token (expires in 1 hour)
+    // Generate verification token (expires in 5 minutes)
     const token = generateToken();
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
     // Store subscriber as unverified
     const ua = req.headers.get('user-agent') || '';

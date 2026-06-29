@@ -57,9 +57,9 @@ export async function POST(req) {
     // The addVerificationToken helper already calls deleteRowByValue(email) first
     // so just calling addVerificationToken is safe.
 
-    // Generate new token (1 hour)
+    // Generate new token (5 minutes)
     const token     = generateToken();
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
     await addVerificationToken({ email, token, expiresAt });
 
