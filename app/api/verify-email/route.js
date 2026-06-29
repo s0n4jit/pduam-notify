@@ -7,7 +7,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { findVerificationToken, deleteVerificationToken, verifySubscriber } from '@/lib/sheets';
+import { findVerificationToken, deleteVerificationToken, verifySubscriber, getSubscriber } from '@/lib/sheets';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +16,17 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get('token');
+    const email = searchParams.get('email');
+
+    // Check if user is already verified in D1
+    if (email) {
+      const subscriber = await getSubscriber(email);
+      if (subscriber && subscriber.verified === 'true') {
+        return new Response(alreadyVerifiedHtml(email), {
+          status: 200, headers: { 'Content-Type': 'text/html' },
+        });
+      }
+    }
 
     if (!token) {
       return new Response(invalidRedirectHtml('Missing verification token.'), {
@@ -563,4 +574,57 @@ function invalidRedirectHtml(message) {
   </script>`;
 
   return pageShell({ title: 'Invalid Link — PDUAM NOTIFY', bodyContent: body, siteUrl });
+}
+
+// ─── Already Verified helper redirecting directly to notices ───────────────────
+
+function alreadyVerifiedHtml(email) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://notify-pduam.vercel.app';
+  const noticesUrl = `${siteUrl}/notices`;
+  const body = `
+  <div class="card">
+    <a href="${siteUrl}" class="brand">
+      <span>🔔</span> PDUAM NOTIFY
+    </a>
+
+    <div class="icon-ring success">✅</div>
+
+    <h1 class="title-success" style="margin-bottom:0.8rem">Already Verified!</h1>
+    <div class="email-badge">${email}</div>
+    <p class="text">
+      Your email address is already verified and active. You are all set to receive notice alerts.
+    </p>
+    
+    <div class="countdown-wrap">
+      <div class="countdown-ring">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle class="track" cx="28" cy="28" r="22"/>
+          <circle class="fill" id="ring-fill" cx="28" cy="28" r="22"/>
+        </svg>
+        <div class="num" id="countdown-num">3</div>
+      </div>
+      <span class="countdown-label">Redirecting to notices…</span>
+    </div>
+  </div>
+  <script>
+    var left = 3;
+    var circumference = 2 * Math.PI * 22;
+    var fill = document.getElementById('ring-fill');
+    var numEl = document.getElementById('countdown-num');
+    if (fill) fill.style.strokeDashoffset = '0';
+    var timer = setInterval(function() {
+      left--;
+      if (left <= 0) {
+        clearInterval(timer);
+        window.location.href = "${noticesUrl}";
+        return;
+      }
+      if (numEl) numEl.textContent = left;
+      if (fill) {
+        fill.style.strokeDashoffset = circumference * (1 - left / 3);
+      }
+    }, 1000);
+  </script>`;
+
+  return pageShell({ title: 'Already Verified — PDUAM NOTIFY', bodyContent: body, siteUrl });
 }
