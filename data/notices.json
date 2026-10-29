@@ -1,6 +1,20 @@
 {
-  "lastChecked": "2026-09-08T08:15:10.660Z",
+  "lastChecked": "2026-10-29T11:10:05.427Z",
   "notices": [
+    {
+      "date": "2026-10-29",
+      "title": "Examinations Notice for HS 1st Year Students",
+      "url": "https://pduamamjonga.ac.in/files/6556-20261029163842.pdf",
+      "hash": "9ad25264b1f5ca8c1d9d1c0ff80604e46c00f132647017a121854bf8e08512aa",
+      "detected_at": "2026-10-29T11:10:05.427Z"
+    },
+    {
+      "date": "2026-10-27",
+      "title": "Notice for General Election 2026-27",
+      "url": "https://pduamamjonga.ac.in/files/4451-20261029163724.pdf",
+      "hash": "295f8580842cab6d76f5da76c3e39a32454272660b334b67e54ccd1d6884452f",
+      "detected_at": "2026-10-29T11:10:05.427Z"
+    },
     {
       "date": "2026-09-08",
       "title": "Notice for Sessional Examination Routine , 2026 ( B.A & B.Sc..)",
