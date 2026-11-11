@@ -1,6 +1,20 @@
 {
-  "lastChecked": "2026-10-31T16:40:50.169Z",
+  "lastChecked": "2026-11-11T05:35:51.425Z",
   "notices": [
+    {
+      "date": "2026-11-10",
+      "title": "Notice regarding Final list of Candidates for the Students' Union Election 2026-27",
+      "url": "https://pduamamjonga.ac.in/files/7270-20261111110303.pdf",
+      "hash": "17d8727f7301d480054ab32436bc8f61a94e28330b12ae5dd3af8a47b94faae3",
+      "detected_at": "2026-11-11T05:35:51.425Z"
+    },
+    {
+      "date": "2026-11-10",
+      "title": "Notice regarding Students' Union Election 2026-27",
+      "url": "https://pduamamjonga.ac.in/files/3048-20261111110106.pdf",
+      "hash": "5301babda8da7f2322f997dc2409625c0b257d0cc502c9ff5b5ce44567d3f5cb",
+      "detected_at": "2026-11-11T05:35:51.425Z"
+    },
     {
       "date": "2026-10-30",
       "title": "Notice for Portfolios Students Union General Election 2026-27",
